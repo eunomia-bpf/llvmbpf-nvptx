@@ -120,3 +120,9 @@ if(BPFTIME_ENABLE_UNIT_TESTING)
 endif()
 
 add_subdirectory(example)
+
+add_executable(ptx_test ptx_test.cpp)
+target_link_directories(ptx_test PRIVATE /usr/local/cuda-12.6/lib64 /usr/local/cuda-12.6/lib64/stubs)
+target_link_libraries(ptx_test PRIVATE llvmbpf_vm cuda cudart libnvptxcompiler_static.a)
+add_dependencies(ptx_test llvmbpf_vm spdlog::spdlog)
+target_include_directories(ptx_test PRIVATE include src /usr/local/cuda-12.6/include)

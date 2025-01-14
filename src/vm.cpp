@@ -7,10 +7,14 @@
 
 using namespace bpftime;
 
-llvmbpf_vm::llvmbpf_vm() 
+llvmbpf_vm::llvmbpf_vm()
 	: ext_funcs(MAX_EXT_FUNCS),
 	  jit_ctx(std::make_unique<bpftime::llvm_bpf_jit_context>(*this))
 {
+	llvm::InitializeAllTargets();
+	llvm::InitializeAllTargetMCs();
+	llvm::InitializeAllAsmParsers();
+	llvm::InitializeAllAsmPrinters();
 }
 
 llvmbpf_vm::~llvmbpf_vm() = default;
@@ -21,8 +25,8 @@ std::string llvmbpf_vm::get_error_message() noexcept
 }
 
 int llvmbpf_vm::register_external_function(size_t index,
-						    const std::string &name,
-						    void *fn) noexcept
+					   const std::string &name,
+					   void *fn) noexcept
 {
 	if (index >= ext_funcs.size()) {
 		error_msg = "Index too large";
@@ -53,7 +57,7 @@ void llvmbpf_vm::unload_code() noexcept
 }
 
 int llvmbpf_vm::exec(void *mem, size_t mem_len,
-			      uint64_t &bpf_return_value) noexcept
+		     uint64_t &bpf_return_value) noexcept
 {
 	if (jitted_function) {
 		SPDLOG_TRACE("llvm-jit: Called jitted function {:x}",
@@ -90,10 +94,8 @@ std::optional<bpftime::precompiled_ebpf_function> llvmbpf_vm::compile() noexcept
 	try {
 		auto res = jit_ctx->do_jit_compile();
 		if (res) {
-			LLVMErrorRef llvmError =
-				llvm::wrap(std::move(res));
-			error_msg =
-				LLVMGetErrorMessage(llvmError);
+			LLVMErrorRef llvmError = llvm::wrap(std::move(res));
+			error_msg = LLVMGetErrorMessage(llvmError);
 			SPDLOG_ERROR("LLVM-JIT: failed to compile: {}",
 				     error_msg);
 			return {};
@@ -109,10 +111,10 @@ std::optional<bpftime::precompiled_ebpf_function> llvmbpf_vm::compile() noexcept
 }
 
 void llvmbpf_vm::set_lddw_helpers(uint64_t (*map_by_fd)(uint32_t),
-					   uint64_t (*map_by_idx)(uint32_t),
-					   uint64_t (*map_val)(uint64_t),
-					   uint64_t (*var_addr)(uint32_t),
-					   uint64_t (*code_addr)(uint32_t)) noexcept
+				  uint64_t (*map_by_idx)(uint32_t),
+				  uint64_t (*map_val)(uint64_t),
+				  uint64_t (*var_addr)(uint32_t),
+				  uint64_t (*code_addr)(uint32_t)) noexcept
 {
 	this->map_by_fd = map_by_fd;
 	this->map_by_idx = map_by_idx;
@@ -121,7 +123,8 @@ void llvmbpf_vm::set_lddw_helpers(uint64_t (*map_by_fd)(uint32_t),
 	this->code_addr = code_addr;
 }
 
-std::optional<std::vector<uint8_t>> llvmbpf_vm::do_aot_compile(bool print_ir) noexcept
+std::optional<std::vector<uint8_t> >
+llvmbpf_vm::do_aot_compile(bool print_ir) noexcept
 {
 	try {
 		return jit_ctx->do_aot_compile(print_ir);
@@ -150,4 +153,9 @@ llvmbpf_vm::load_aot_object(const std::vector<uint8_t> &object) noexcept
 		return {};
 	}
 	return jitted_function;
+}
+
+std::optional<std::string> llvmbpf_vm::generate_ptx(const char *target_cpu)
+{
+	return this->jit_ctx->generate_ptx(target_cpu);
 }

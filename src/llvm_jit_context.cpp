@@ -4,6 +4,9 @@
  * All rights reserved.
  */
 
+#include <llvm/ExecutionEngine/Orc/JITTargetMachineBuilder.h>
+#include <llvm/ADT/Triple.h>
+#include "./trampoline_ptx.h"
 #ifdef WIN32
 #pragma warning(disable : 4141 4244 4291 4146 4267 4275 4624 4800)
 #endif
@@ -418,7 +421,7 @@ llvm_bpf_jit_context::load_aot_object(const std::vector<uint8_t> &buf)
 	this->get_entry_address();
 	return llvm::Error::success();
 }
-
+static ExitOnError exitOnErr;
 std::tuple<std::unique_ptr<llvm::orc::LLJIT>, std::vector<std::string>,
 	   std::vector<std::string> >
 llvm_bpf_jit_context::create_and_initialize_lljit_instance()
@@ -427,7 +430,7 @@ llvm_bpf_jit_context::create_and_initialize_lljit_instance()
 	SPDLOG_DEBUG("LLVM-JIT: Creating LLJIT instance");
 	auto jit_err = LLJITBuilder().create();
 	if (!jit_err) {
-		(void)jit_err.takeError();
+		exitOnErr(jit_err.takeError());
 		return std::make_tuple(nullptr, std::vector<std::string>{},
 				       std::vector<std::string>{});
 	}
@@ -529,4 +532,109 @@ precompiled_ebpf_function llvm_bpf_jit_context::get_entry_address()
 		SPDLOG_DEBUG("LLVM-JIT: Entry func is {:x}", (uintptr_t)addr);
 		return addr;
 	}
+}
+
+static std::unique_ptr<llvm::TargetMachine>
+createNVPTXTargetMachine(const char *target_cpu)
+{
+	std::string error;
+	const llvm::Target *target =
+		llvm::TargetRegistry::lookupTarget("nvptx64", error);
+	if (!target) {
+		throw std::runtime_error("Failed to find NVPTX target: " +
+					 error);
+	}
+
+	llvm::Triple triple("nvptx64-nvidia-cuda");
+
+	llvm::TargetOptions options;
+	options.FloatABIType = llvm::FloatABI::Default;
+
+	return std::unique_ptr<llvm::TargetMachine>(target->createTargetMachine(
+		triple.str(), target_cpu, "", options, llvm::Reloc::Static));
+}
+std::optional<std::string>
+llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
+{
+	spin_lock_guard guard(compiling.get());
+	auto targetMachine = createNVPTXTargetMachine(target_cpu);
+	std::vector<std::string> extFuncNames;
+	for (uint32_t i = 0; i < std::size(vm.ext_funcs); i++) {
+		if (vm.ext_funcs[i].has_value()) {
+			extFuncNames.push_back(ext_func_sym(i));
+		}
+	}
+	std::vector<std::string> definedLddwHelpers;
+	const auto tryDefineLddwHelper = [&](const char *name, void *func) {
+		if (func) {
+			SPDLOG_DEBUG("Defining LDDW helper {} with addr {:x}",
+				     name, (uintptr_t)func);
+			definedLddwHelpers.push_back(name);
+		}
+	};
+	// Only map_val will have a chance to be called at runtime, so it's the
+	// only symbol to be defined
+	tryDefineLddwHelper(LDDW_HELPER_MAP_VAL, (void *)vm.map_val);
+	// These symbols won't be used at runtime, because we have already
+	// do relocation when loading the eBPF bytecode
+	// tryDefineLddwHelper(LDDW_HELPER_MAP_BY_FD, (void *)vm.map_by_fd);
+	// tryDefineLddwHelper(LDDW_HELPER_MAP_BY_IDX, (void *)vm.map_by_idx);
+	// tryDefineLddwHelper(LDDW_HELPER_CODE_ADDR, (void *)vm.code_addr);
+	// tryDefineLddwHelper(LDDW_HELPER_VAR_ADDR, (void *)vm.var_addr);
+
+	auto bpfModuleOrErr =
+		generateModule(extFuncNames, definedLddwHelpers, true, true);
+	if (!bpfModuleOrErr) {
+		exitOnErr(bpfModuleOrErr.takeError());
+		return {};
+	}
+
+	// If successful, get the module
+	auto bpfModule = std::move(*bpfModuleOrErr);
+	// Optimize the module
+	return bpfModule.withModuleDo([&](auto &M) {
+		M.setDataLayout(targetMachine->createDataLayout());
+		optimizeModule(M);
+
+		llvm::legacy::PassManager passManager;
+		CodeGenFileType fileType = llvm::CGFT_AssemblyFile;
+		SmallVector<char, 0> objStream;
+		std::unique_ptr<raw_svector_ostream> BOS =
+			std::make_unique<raw_svector_ostream>(objStream);
+
+		if (targetMachine->addPassesToEmitFile(passManager, *BOS,
+						       nullptr, fileType)) {
+			throw std::runtime_error(
+				"TargetMachine cannot emit a file of this type");
+		}
+
+		passManager.run(M);
+		const std::string to_replace_names[][2] = {
+			{ "_bpf_helper_ext_0001", "_bpf_helper_ext_0001_dup" },
+			{ "_bpf_helper_ext_0002", "_bpf_helper_ext_0002_dup" },
+			{ "_bpf_helper_ext_0003", "_bpf_helper_ext_0003_dup" }
+		};
+		const std::string version_header =
+			".version 5.0\n.target sm_60\n.address_size 64\n";
+		const std::string entry_func = ".visible .func bpf_main";
+		std::string result(objStream.begin(), objStream.end());
+
+		for (const auto &entry : to_replace_names) {
+			auto idx = result.find(entry[0]);
+			if (idx != result.npos) {
+				result = result.replace(idx, entry[0].size(),
+							entry[1]);
+			}
+		}
+		auto idx = result.find(version_header);
+		result = result.replace(idx, version_header.size(), "");
+		idx = result.find(entry_func);
+		result = result.replace(idx, entry_func.size(),
+					".visible .entry bpf_main");
+
+		result = TRAMPOLINE_PTX + result;
+		// result = ".version 8.5\n.target sm_60, debug\n.address_size
+		// 64\n" + 	 result;
+		return result;
+	});
 }

@@ -18,3 +18,5 @@ example/standalone/standalone
 example/inline/standalone
 example/inline/inline.o
 example/load-llvm-ir/bpf_module.o
+dump*.txt
+/a.out

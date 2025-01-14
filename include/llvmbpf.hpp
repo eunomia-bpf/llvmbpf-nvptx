@@ -28,7 +28,7 @@ using precompiled_ebpf_function = uint64_t (*)(void *mem, size_t mem_len);
 class llvmbpf_vm {
     public:
 	llvmbpf_vm();
-	~llvmbpf_vm();  // Destructor declared
+	~llvmbpf_vm(); // Destructor declared
 	std::string get_error_message() noexcept;
 
 	// register external function, e.g. helper functions for eBPF
@@ -49,14 +49,16 @@ class llvmbpf_vm {
 	// If the program is JIT compiled, it will be executed directly
 	// If not, it will be JIT compiled, cached and executed
 	// return 0 on success
-	int exec(void *mem, size_t mem_len, uint64_t &bpf_return_value) noexcept;
+	int exec(void *mem, size_t mem_len,
+		 uint64_t &bpf_return_value) noexcept;
 
 	// Do AOT compile and generate the ELF object file
 	// The external functions are required to be registered before
 	// calling this function. The compile result can be linked with
 	// other object files to generate the final executable.
 	// return the ELF object file content
-	std::optional<std::vector<uint8_t>> do_aot_compile(bool print_ir = false) noexcept;
+	std::optional<std::vector<uint8_t> >
+	do_aot_compile(bool print_ir = false) noexcept;
 
 	// Load the AOT object file into the vm and link it with the
 	// external functions
@@ -78,6 +80,8 @@ class llvmbpf_vm {
 			      uint64_t (*map_val)(uint64_t),
 			      uint64_t (*var_addr)(uint32_t),
 			      uint64_t (*code_addr)(uint32_t)) noexcept;
+	std::optional<std::string>
+	generate_ptx(const char *target_cpu = "sm_60");
 
     private:
 	// See spec for details
