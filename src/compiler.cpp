@@ -87,7 +87,7 @@ const size_t MAX_LOCAL_FUNC_DEPTH = 32;
 Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 	const std::vector<std::string> &extFuncNames,
 	const std::vector<std::string> &lddwHelpers,
-	bool patch_map_val_at_compile_time)
+	bool patch_map_val_at_compile_time, bool is_cuda)
 {
 	SPDLOG_DEBUG("Generating module: patch_map_val_at_compile_time={}",
 		     patch_map_val_at_compile_time);
@@ -134,9 +134,11 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 		false);
 
 	for (const auto &name : extFuncNames) {
-		auto currFunc = Function::Create(helperFuncTy,
-						 Function::ExternalLinkage,
-						 name, jitModule.get());
+		Function *currFunc = Function::Create(
+			helperFuncTy,
+			is_cuda ? Function::LinkageTypes::ExternalLinkage :
+				  Function::ExternalLinkage,
+			name, jitModule.get());
 		extFunc[name] = currFunc;
 	}
 	std::vector<bool> blockBegin(insts.size(), false);
@@ -162,7 +164,8 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 
 	// The main function
 	Function *bpf_func = Function::Create(
-		FunctionType::get(Type::getInt64Ty(*context),
+		FunctionType::get(is_cuda ? Type::getVoidTy(*context) :
+					    Type::getInt64Ty(*context),
 				  { llvm::PointerType::getUnqual(
 					    llvm::Type::getInt8Ty(*context)),
 				    Type::getInt64Ty(*context) },
@@ -252,8 +255,12 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 
 	{
 		IRBuilder<> builder(exitBlk);
-		builder.CreateRet(
-			builder.CreateLoad(builder.getInt64Ty(), regs[0]));
+		if (is_cuda) {
+			builder.CreateRetVoid();
+		} else {
+			builder.CreateRet(builder.CreateLoad(
+				builder.getInt64Ty(), regs[0]));
+		}
 	}
 
 	// Basic blocks that handle the returning of local func
@@ -766,19 +773,22 @@ this conversion.
 			uint64_t val =
 				(uint64_t)((uint32_t)inst.imm) |
 				(((uint64_t)((uint32_t)nextinst.imm)) << 32);
+			SPDLOG_DEBUG(
+				"Load LDDW val= {} part1={:x} part2={:x} src={} pc={}",
+				val, (uint64_t)inst.imm, (uint64_t)nextinst.imm,
+				(int)inst.src, pc);
 			pc++;
+			auto raw_pc = pc - 1;
 
-			SPDLOG_DEBUG("Load LDDW val= {} part1={:x} part2={:x}",
-				     val, (uint64_t)inst.imm,
-				     (uint64_t)nextinst.imm);
 			if (inst.src == 0) {
-				SPDLOG_DEBUG("Emit lddw helper 0 at pc {}", pc);
+				SPDLOG_DEBUG("Emit lddw helper 0 at pc {}",
+					     raw_pc);
 				builder.CreateStore(builder.getInt64(val),
 						    regs[inst.dst]);
 			} else if (inst.src == 1) {
 				SPDLOG_DEBUG(
 					"Emit lddw helper 1 (map_by_fd) at pc {}, imm={}, patched at compile time",
-					pc, inst.imm);
+					raw_pc, inst.imm);
 				if (vm.map_by_fd) {
 					builder.CreateStore(
 						builder.getInt64(
@@ -797,7 +807,7 @@ this conversion.
 			} else if (inst.src == 2) {
 				SPDLOG_DEBUG(
 					"Emit lddw helper 2 (map_by_fd + map_val) at pc {}, imm1={}, imm2={}",
-					pc, inst.imm, nextinst.imm);
+					raw_pc, inst.imm, nextinst.imm);
 				uint64_t mapPtr;
 				if (vm.map_by_fd) {
 					mapPtr = vm.map_by_fd(inst.imm);
@@ -815,7 +825,7 @@ this conversion.
 							llvm::StringError>(
 							"map_val is not provided, unable to compile at pc " +
 								std::to_string(
-									pc),
+									raw_pc),
 							llvm::inconvertibleErrorCode());
 					}
 					builder.CreateStore(
@@ -847,7 +857,7 @@ this conversion.
 							llvm::StringError>(
 							"Using lddw helper 2, which requires map_val to be defined at pc " +
 								std::to_string(
-									pc),
+									raw_pc),
 							llvm::inconvertibleErrorCode());
 					}
 				}
@@ -855,12 +865,12 @@ this conversion.
 			} else if (inst.src == 3) {
 				SPDLOG_DEBUG(
 					"Emit lddw helper 3 (var_addr) at pc {}, imm1={}",
-					pc, inst.imm);
+					raw_pc, inst.imm);
 				if (!vm.var_addr) {
 					return llvm::make_error<
 						llvm::StringError>(
 						"var_addr is not provided, unable to compile at pc " +
-							std::to_string(pc),
+							std::to_string(raw_pc),
 						llvm::inconvertibleErrorCode());
 				}
 				builder.CreateStore(
@@ -869,12 +879,12 @@ this conversion.
 			} else if (inst.src == 4) {
 				SPDLOG_DEBUG(
 					"Emit lddw helper 4 (code_addr) at pc {}, imm1={}",
-					pc, inst.imm);
+					raw_pc, inst.imm);
 				if (!vm.code_addr) {
 					return llvm::make_error<
 						llvm::StringError>(
 						"code_addr is not provided, unable to compile at pc " +
-							std::to_string(pc),
+							std::to_string(raw_pc),
 						llvm::inconvertibleErrorCode());
 				}
 				builder.CreateStore(
@@ -884,7 +894,7 @@ this conversion.
 			} else if (inst.src == 5) {
 				SPDLOG_DEBUG(
 					"Emit lddw helper 4 (map_by_idx) at pc {}, imm1={}",
-					pc, inst.imm);
+					raw_pc, inst.imm);
 				if (vm.map_by_idx) {
 					builder.CreateStore(
 						builder.getInt64(vm.map_by_idx(
@@ -903,7 +913,7 @@ this conversion.
 			} else if (inst.src == 6) {
 				SPDLOG_DEBUG(
 					"Emit lddw helper 6 (map_by_idx + map_val) at pc {}, imm1={}, imm2={}",
-					pc, inst.imm, nextinst.imm);
+					raw_pc, inst.imm, nextinst.imm);
 
 				uint64_t mapPtr;
 				if (vm.map_by_idx) {
@@ -929,7 +939,7 @@ this conversion.
 							llvm::StringError>(
 							"map_val is not provided, unable to compile at pc " +
 								std::to_string(
-									pc),
+									raw_pc),
 							llvm::inconvertibleErrorCode());
 					}
 
@@ -957,7 +967,7 @@ this conversion.
 							llvm::StringError>(
 							"Using lddw helper 6 at pc " +
 								std::to_string(
-									pc),
+									raw_pc),
 							llvm::inconvertibleErrorCode());
 					}
 				}
@@ -1315,10 +1325,7 @@ this conversion.
 			builder.CreateBr(allBlocks[i + 1]);
 		}
 	}
-	std::string buffer;
-	llvm::raw_string_ostream stream(buffer);
-	if (verifyModule(*jitModule, &stream)) {
-		SPDLOG_ERROR("Failed to verify module: {}", buffer);
+	if (!is_cuda && verifyModule(*jitModule, &dbgs())) {
 		return llvm::make_error<llvm::StringError>(
 			"Invalid module generated",
 			llvm::inconvertibleErrorCode());
