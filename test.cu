@@ -11,10 +11,9 @@
 #include <thread>
 #include <vector>
 
-
 /**
  * @brief Compile with clang-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
- * 
+ *
  */
 enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
 
@@ -129,10 +128,11 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 	uint64_t map, uint64_t key, uint64_t a, uint64_t b, uint64_t c)
 {
 	CallRequest req;
-	const auto& map_info = ::map_info[map];
-	printf("helper1 map %ld keysize=%d valuesize=%d\n",map,map_info.key_size,map_info.value_size);
-	simple_memcpy(&req.map_lookup.key, (void *)(uintptr_t)key, map_info.key_size);
-	
+	const auto &map_info = ::map_info[map >> 32];
+	printf("helper1 map %ld keysize=%d valuesize=%d\n", map,
+	       map_info.key_size, map_info.value_size);
+	simple_memcpy(&req.map_lookup.key, (void *)(uintptr_t)key,
+		      map_info.key_size);
 
 	CallResponse resp =
 		make_map_call((long)map, (int)MapOperation::LOOKUP, req);
@@ -144,10 +144,13 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0002(
 	uint64_t map, uint64_t key, uint64_t value, uint64_t flags, uint64_t a)
 {
 	CallRequest req;
-	const auto& map_info = ::map_info[map];
-	printf("helper2 map %ld keysize=%d valuesize=%d\n",map,map_info.key_size,map_info.value_size);
-	simple_memcpy(&req.map_update.key, (void *)(uintptr_t)key, map_info.key_size);
-	simple_memcpy(&req.map_update.value, (void *)(uintptr_t)value, map_info.value_size);
+	const auto &map_info = ::map_info[map >> 32];
+	// printf("helper2 map %ld keysize=%d
+	// valuesize=%d\n",map,map_info.key_size,map_info.value_size);
+	simple_memcpy(&req.map_update.key, (void *)(uintptr_t)key,
+		      map_info.key_size);
+	simple_memcpy(&req.map_update.value, (void *)(uintptr_t)value,
+		      map_info.value_size);
 	req.map_update.flags = (uintptr_t)flags;
 
 	CallResponse resp =
@@ -159,9 +162,11 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0003(
 	uint64_t map, uint64_t key, uint64_t a, uint64_t b, uint64_t c)
 {
 	CallRequest req;
-	const auto& map_info = ::map_info[map];
-	printf("helper3 map %ld keysize=%d valuesize=%d\n",map,map_info.key_size,map_info.value_size);
-	simple_memcpy(&req.map_delete.key, (void *)(uintptr_t)key, map_info.key_size);
+	const auto &map_info = ::map_info[map >> 32];
+	// printf("helper3 map %ld keysize=%d
+	// valuesize=%d\n",map,map_info.key_size,map_info.value_size);
+	simple_memcpy(&req.map_delete.key, (void *)(uintptr_t)key,
+		      map_info.key_size);
 	CallResponse resp =
 		make_map_call((long)map, (int)MapOperation::DELETE, req);
 	return resp.map_delete.result;
@@ -169,14 +174,13 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0003(
 
 extern "C" __global__ void bpf_main(void *mem, size_t sz)
 {
-	printf("kernel function entered, mem=%lx, memsz=%ld\n", (uintptr_t)mem,
-	       sz);
+	// printf("kernel function entered, mem=%lx, memsz=%ld\n",
+	// (uintptr_t)mem,
+	//        sz);
 	char buf[16] = "aaa";
 	//   printf("setup function, const data=%lx\n", constData);
-	auto result = _bpf_helper_ext_0001(1, (uintptr_t)buf, 0, 0,
-	0);
-	_bpf_helper_ext_0002(1, (uintptr_t)buf, (uintptr_t)buf, 0,
-	0);
+	auto result = _bpf_helper_ext_0001(1, (uintptr_t)buf, 0, 0, 0);
+	_bpf_helper_ext_0002(1, (uintptr_t)buf, (uintptr_t)buf, 0, 0);
 	_bpf_helper_ext_0003(1, (uintptr_t)buf, 0, 0, 0);
 	printf("call done\n");
 	printf("got response %d at %d\n", *(int *)result,
@@ -242,8 +246,7 @@ int main()
 		return -1;
 	}
 	char *devPtrStr = nullptr;
-	err = cudaHostGetDevicePointer((void **)&devPtrStr, (void *)&buf,
-				       0);
+	err = cudaHostGetDevicePointer((void **)&devPtrStr, (void *)&buf, 0);
 	if (err != cudaSuccess) {
 		std::cerr << "cudaHostGetDevicePointer(2) error: "
 			  << cudaGetErrorString(err) << "\n";
@@ -298,11 +301,12 @@ int main()
 		std::cout << "[Host Thread] Done.\n";
 	});
 	std::vector<MapBasicInfo> local_map_info(256);
-	
+
 	local_map_info[1].enabled = true;
 	local_map_info[1].key_size = 16;
-	local_map_info[1].value_size= 16;
-	cudaMemcpyToSymbol(map_info, local_map_info.data(), sizeof(MapBasicInfo)*local_map_info.size());
+	local_map_info[1].value_size = 16;
+	cudaMemcpyToSymbol(map_info, local_map_info.data(),
+			   sizeof(MapBasicInfo) * local_map_info.size());
 	// 5. 启动核函数 (只发1个block,1个thread做演示)
 	bpf_main<<<1, 1>>>(hostMem, sizeof(*hostMem));
 
