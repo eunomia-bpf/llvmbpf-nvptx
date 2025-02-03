@@ -142,8 +142,8 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 {
 	CallRequest req;
 	const auto &map_info = ::map_info[map >> 32];
-	printf("helper1 map %ld keysize=%d valuesize=%d\n", map,
-	       map_info.key_size, map_info.value_size);
+	// printf("helper1 map %ld keysize=%d valuesize=%d\n", map,
+	//        map_info.key_size, map_info.value_size);
 	simple_memcpy(&req.map_lookup.key, (void *)(uintptr_t)key,
 		      map_info.key_size);
 
