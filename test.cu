@@ -126,8 +126,10 @@ extern "C" __device__ CallResponse make_map_call(long map_id, int req_id,
 
 	spin_unlock(&g_data->occupy_flag);
 	auto end_time = read_globaltimer();
-	if (req_id < 8)
-		g_data->time_sum[req_id] += (end_time - start_time);
+	if (req_id < 8) {
+		atomicAdd((unsigned long long *)&g_data->time_sum[req_id],
+			  end_time - start_time);
+	}
 	return resp;
 }
 
