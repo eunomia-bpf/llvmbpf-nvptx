@@ -60,14 +60,14 @@ $L__BB0_1:                              // =>This Inner Loop Header: Depth=1
 	.param .align 8 .b8 make_map_call_param_2[520]
 )                                       // @make_map_call
 {
-	.reg .pred 	%p<2>;
+	.reg .pred 	%p<3>;
 	.reg .b16 	%rs<513>;
 	.reg .b32 	%r<5>;
-	.reg .b64 	%rd<9>;
+	.reg .b64 	%rd<18>;
 
 // %bb.0:
 	ld.param.u32 	%r1, [make_map_call_param_1];
-	ld.param.u64 	%rd3, [make_map_call_param_0];
+	ld.param.u64 	%rd7, [make_map_call_param_0];
 	ld.param.u8 	%rs1, [make_map_call_param_2];
 	ld.param.u8 	%rs2, [make_map_call_param_2+1];
 	ld.param.u8 	%rs3, [make_map_call_param_2+2];
@@ -581,162 +581,179 @@ $L__BB0_1:                              // =>This Inner Loop Header: Depth=1
 	ld.param.u8 	%rs511, [make_map_call_param_2+510];
 	ld.param.u8 	%rs512, [make_map_call_param_2+511];
 	ld.param.u64 	%rd1, [make_map_call_param_2+512];
-	ld.const.u64 	%rd5, [constData];
-	add.s64 	%rd4, %rd5, 8;
+	ld.const.u64 	%rd10, [constData];
+	// begin inline asm
+	mov.u64 %rd8, %globaltimer;
+	// end inline asm
+	add.s64 	%rd9, %rd10, 8;
 $L__BB2_1:                              // =>This Inner Loop Header: Depth=1
-	atom.cas.b32 	%r2, [%rd4], 0, 1;
+	atom.cas.b32 	%r2, [%rd9], 0, 1;
 	setp.eq.s32 	%p1, %r2, 1;
 	@%p1 bra 	$L__BB2_1;
 // %bb.2:
-	st.v4.u8 	[%rd5+28], {%rs5, %rs6, %rs7, %rs8};
-	st.v4.u8 	[%rd5+24], {%rs1, %rs2, %rs3, %rs4};
-	st.v4.u8 	[%rd5+36], {%rs13, %rs14, %rs15, %rs16};
-	st.v4.u8 	[%rd5+32], {%rs9, %rs10, %rs11, %rs12};
-	st.v4.u8 	[%rd5+44], {%rs21, %rs22, %rs23, %rs24};
-	st.v4.u8 	[%rd5+40], {%rs17, %rs18, %rs19, %rs20};
-	st.v4.u8 	[%rd5+52], {%rs29, %rs30, %rs31, %rs32};
-	st.v4.u8 	[%rd5+48], {%rs25, %rs26, %rs27, %rs28};
-	st.v4.u8 	[%rd5+60], {%rs37, %rs38, %rs39, %rs40};
-	st.v4.u8 	[%rd5+56], {%rs33, %rs34, %rs35, %rs36};
-	st.v4.u8 	[%rd5+68], {%rs45, %rs46, %rs47, %rs48};
-	st.v4.u8 	[%rd5+64], {%rs41, %rs42, %rs43, %rs44};
-	st.v4.u8 	[%rd5+76], {%rs53, %rs54, %rs55, %rs56};
-	st.v4.u8 	[%rd5+72], {%rs49, %rs50, %rs51, %rs52};
-	st.v4.u8 	[%rd5+84], {%rs61, %rs62, %rs63, %rs64};
-	st.v4.u8 	[%rd5+80], {%rs57, %rs58, %rs59, %rs60};
-	st.v4.u8 	[%rd5+92], {%rs69, %rs70, %rs71, %rs72};
-	st.v4.u8 	[%rd5+88], {%rs65, %rs66, %rs67, %rs68};
-	st.v4.u8 	[%rd5+100], {%rs77, %rs78, %rs79, %rs80};
-	st.v4.u8 	[%rd5+96], {%rs73, %rs74, %rs75, %rs76};
-	st.v4.u8 	[%rd5+108], {%rs85, %rs86, %rs87, %rs88};
-	st.v4.u8 	[%rd5+104], {%rs81, %rs82, %rs83, %rs84};
-	st.v4.u8 	[%rd5+116], {%rs93, %rs94, %rs95, %rs96};
-	st.v4.u8 	[%rd5+112], {%rs89, %rs90, %rs91, %rs92};
-	st.v4.u8 	[%rd5+124], {%rs101, %rs102, %rs103, %rs104};
-	st.v4.u8 	[%rd5+120], {%rs97, %rs98, %rs99, %rs100};
-	st.v4.u8 	[%rd5+132], {%rs109, %rs110, %rs111, %rs112};
-	st.v4.u8 	[%rd5+128], {%rs105, %rs106, %rs107, %rs108};
-	st.v4.u8 	[%rd5+140], {%rs117, %rs118, %rs119, %rs120};
-	st.v4.u8 	[%rd5+136], {%rs113, %rs114, %rs115, %rs116};
-	st.v4.u8 	[%rd5+148], {%rs125, %rs126, %rs127, %rs128};
-	st.v4.u8 	[%rd5+144], {%rs121, %rs122, %rs123, %rs124};
-	st.v4.u8 	[%rd5+156], {%rs133, %rs134, %rs135, %rs136};
-	st.v4.u8 	[%rd5+152], {%rs129, %rs130, %rs131, %rs132};
-	st.v4.u8 	[%rd5+164], {%rs141, %rs142, %rs143, %rs144};
-	st.v4.u8 	[%rd5+160], {%rs137, %rs138, %rs139, %rs140};
-	st.v4.u8 	[%rd5+172], {%rs149, %rs150, %rs151, %rs152};
-	st.v4.u8 	[%rd5+168], {%rs145, %rs146, %rs147, %rs148};
-	st.v4.u8 	[%rd5+180], {%rs157, %rs158, %rs159, %rs160};
-	st.v4.u8 	[%rd5+176], {%rs153, %rs154, %rs155, %rs156};
-	st.v4.u8 	[%rd5+188], {%rs165, %rs166, %rs167, %rs168};
-	st.v4.u8 	[%rd5+184], {%rs161, %rs162, %rs163, %rs164};
-	st.v4.u8 	[%rd5+196], {%rs173, %rs174, %rs175, %rs176};
-	st.v4.u8 	[%rd5+192], {%rs169, %rs170, %rs171, %rs172};
-	st.v4.u8 	[%rd5+204], {%rs181, %rs182, %rs183, %rs184};
-	st.v4.u8 	[%rd5+200], {%rs177, %rs178, %rs179, %rs180};
-	st.v4.u8 	[%rd5+212], {%rs189, %rs190, %rs191, %rs192};
-	st.v4.u8 	[%rd5+208], {%rs185, %rs186, %rs187, %rs188};
-	st.v4.u8 	[%rd5+220], {%rs197, %rs198, %rs199, %rs200};
-	st.v4.u8 	[%rd5+216], {%rs193, %rs194, %rs195, %rs196};
-	st.v4.u8 	[%rd5+228], {%rs205, %rs206, %rs207, %rs208};
-	st.v4.u8 	[%rd5+224], {%rs201, %rs202, %rs203, %rs204};
-	st.v4.u8 	[%rd5+236], {%rs213, %rs214, %rs215, %rs216};
-	st.v4.u8 	[%rd5+232], {%rs209, %rs210, %rs211, %rs212};
-	st.v4.u8 	[%rd5+244], {%rs221, %rs222, %rs223, %rs224};
-	st.v4.u8 	[%rd5+240], {%rs217, %rs218, %rs219, %rs220};
-	st.v4.u8 	[%rd5+252], {%rs229, %rs230, %rs231, %rs232};
-	st.v4.u8 	[%rd5+248], {%rs225, %rs226, %rs227, %rs228};
-	st.v4.u8 	[%rd5+260], {%rs237, %rs238, %rs239, %rs240};
-	st.v4.u8 	[%rd5+256], {%rs233, %rs234, %rs235, %rs236};
-	st.v4.u8 	[%rd5+268], {%rs245, %rs246, %rs247, %rs248};
-	st.v4.u8 	[%rd5+264], {%rs241, %rs242, %rs243, %rs244};
-	st.v4.u8 	[%rd5+276], {%rs253, %rs254, %rs255, %rs256};
-	st.v4.u8 	[%rd5+272], {%rs249, %rs250, %rs251, %rs252};
-	st.v4.u8 	[%rd5+284], {%rs261, %rs262, %rs263, %rs264};
-	st.v4.u8 	[%rd5+280], {%rs257, %rs258, %rs259, %rs260};
-	st.v4.u8 	[%rd5+292], {%rs269, %rs270, %rs271, %rs272};
-	st.v4.u8 	[%rd5+288], {%rs265, %rs266, %rs267, %rs268};
-	st.v4.u8 	[%rd5+300], {%rs277, %rs278, %rs279, %rs280};
-	st.v4.u8 	[%rd5+296], {%rs273, %rs274, %rs275, %rs276};
-	st.v4.u8 	[%rd5+308], {%rs285, %rs286, %rs287, %rs288};
-	st.v4.u8 	[%rd5+304], {%rs281, %rs282, %rs283, %rs284};
-	st.v4.u8 	[%rd5+316], {%rs293, %rs294, %rs295, %rs296};
-	st.v4.u8 	[%rd5+312], {%rs289, %rs290, %rs291, %rs292};
-	st.v4.u8 	[%rd5+324], {%rs301, %rs302, %rs303, %rs304};
-	st.v4.u8 	[%rd5+320], {%rs297, %rs298, %rs299, %rs300};
-	st.v4.u8 	[%rd5+332], {%rs309, %rs310, %rs311, %rs312};
-	st.v4.u8 	[%rd5+328], {%rs305, %rs306, %rs307, %rs308};
-	st.v4.u8 	[%rd5+340], {%rs317, %rs318, %rs319, %rs320};
-	st.v4.u8 	[%rd5+336], {%rs313, %rs314, %rs315, %rs316};
-	st.v4.u8 	[%rd5+348], {%rs325, %rs326, %rs327, %rs328};
-	st.v4.u8 	[%rd5+344], {%rs321, %rs322, %rs323, %rs324};
-	st.v4.u8 	[%rd5+356], {%rs333, %rs334, %rs335, %rs336};
-	st.v4.u8 	[%rd5+352], {%rs329, %rs330, %rs331, %rs332};
-	st.v4.u8 	[%rd5+364], {%rs341, %rs342, %rs343, %rs344};
-	st.v4.u8 	[%rd5+360], {%rs337, %rs338, %rs339, %rs340};
-	st.v4.u8 	[%rd5+372], {%rs349, %rs350, %rs351, %rs352};
-	st.v4.u8 	[%rd5+368], {%rs345, %rs346, %rs347, %rs348};
-	st.v4.u8 	[%rd5+380], {%rs357, %rs358, %rs359, %rs360};
-	st.v4.u8 	[%rd5+376], {%rs353, %rs354, %rs355, %rs356};
-	st.v4.u8 	[%rd5+388], {%rs365, %rs366, %rs367, %rs368};
-	st.v4.u8 	[%rd5+384], {%rs361, %rs362, %rs363, %rs364};
-	st.v4.u8 	[%rd5+396], {%rs373, %rs374, %rs375, %rs376};
-	st.v4.u8 	[%rd5+392], {%rs369, %rs370, %rs371, %rs372};
-	st.v4.u8 	[%rd5+404], {%rs381, %rs382, %rs383, %rs384};
-	st.v4.u8 	[%rd5+400], {%rs377, %rs378, %rs379, %rs380};
-	st.v4.u8 	[%rd5+412], {%rs389, %rs390, %rs391, %rs392};
-	st.v4.u8 	[%rd5+408], {%rs385, %rs386, %rs387, %rs388};
-	st.v4.u8 	[%rd5+420], {%rs397, %rs398, %rs399, %rs400};
-	st.v4.u8 	[%rd5+416], {%rs393, %rs394, %rs395, %rs396};
-	st.v4.u8 	[%rd5+428], {%rs405, %rs406, %rs407, %rs408};
-	st.v4.u8 	[%rd5+424], {%rs401, %rs402, %rs403, %rs404};
-	st.v4.u8 	[%rd5+436], {%rs413, %rs414, %rs415, %rs416};
-	st.v4.u8 	[%rd5+432], {%rs409, %rs410, %rs411, %rs412};
-	st.v4.u8 	[%rd5+444], {%rs421, %rs422, %rs423, %rs424};
-	st.v4.u8 	[%rd5+440], {%rs417, %rs418, %rs419, %rs420};
-	st.v4.u8 	[%rd5+452], {%rs429, %rs430, %rs431, %rs432};
-	st.v4.u8 	[%rd5+448], {%rs425, %rs426, %rs427, %rs428};
-	st.v4.u8 	[%rd5+460], {%rs437, %rs438, %rs439, %rs440};
-	st.v4.u8 	[%rd5+456], {%rs433, %rs434, %rs435, %rs436};
-	st.v4.u8 	[%rd5+468], {%rs445, %rs446, %rs447, %rs448};
-	st.v4.u8 	[%rd5+464], {%rs441, %rs442, %rs443, %rs444};
-	st.v4.u8 	[%rd5+476], {%rs453, %rs454, %rs455, %rs456};
-	st.v4.u8 	[%rd5+472], {%rs449, %rs450, %rs451, %rs452};
-	st.v4.u8 	[%rd5+484], {%rs461, %rs462, %rs463, %rs464};
-	st.v4.u8 	[%rd5+480], {%rs457, %rs458, %rs459, %rs460};
-	st.v4.u8 	[%rd5+492], {%rs469, %rs470, %rs471, %rs472};
-	st.v4.u8 	[%rd5+488], {%rs465, %rs466, %rs467, %rs468};
-	st.v4.u8 	[%rd5+500], {%rs477, %rs478, %rs479, %rs480};
-	st.v4.u8 	[%rd5+496], {%rs473, %rs474, %rs475, %rs476};
-	st.v4.u8 	[%rd5+508], {%rs485, %rs486, %rs487, %rs488};
-	st.v4.u8 	[%rd5+504], {%rs481, %rs482, %rs483, %rs484};
-	st.v4.u8 	[%rd5+516], {%rs493, %rs494, %rs495, %rs496};
-	st.v4.u8 	[%rd5+512], {%rs489, %rs490, %rs491, %rs492};
-	st.v4.u8 	[%rd5+524], {%rs501, %rs502, %rs503, %rs504};
-	st.v4.u8 	[%rd5+520], {%rs497, %rs498, %rs499, %rs500};
-	st.v4.u8 	[%rd5+532], {%rs509, %rs510, %rs511, %rs512};
-	st.v4.u8 	[%rd5+528], {%rs505, %rs506, %rs507, %rs508};
-	st.u64 	[%rd5+536], %rd1;
-	st.u32 	[%rd5+12], %r1;
-	st.u64 	[%rd5+16], %rd3;
-	add.s64 	%rd6, %rd5, 4;
+	st.v4.u8 	[%rd10+28], {%rs5, %rs6, %rs7, %rs8};
+	st.v4.u8 	[%rd10+24], {%rs1, %rs2, %rs3, %rs4};
+	st.v4.u8 	[%rd10+36], {%rs13, %rs14, %rs15, %rs16};
+	st.v4.u8 	[%rd10+32], {%rs9, %rs10, %rs11, %rs12};
+	st.v4.u8 	[%rd10+44], {%rs21, %rs22, %rs23, %rs24};
+	st.v4.u8 	[%rd10+40], {%rs17, %rs18, %rs19, %rs20};
+	st.v4.u8 	[%rd10+52], {%rs29, %rs30, %rs31, %rs32};
+	st.v4.u8 	[%rd10+48], {%rs25, %rs26, %rs27, %rs28};
+	st.v4.u8 	[%rd10+60], {%rs37, %rs38, %rs39, %rs40};
+	st.v4.u8 	[%rd10+56], {%rs33, %rs34, %rs35, %rs36};
+	st.v4.u8 	[%rd10+68], {%rs45, %rs46, %rs47, %rs48};
+	st.v4.u8 	[%rd10+64], {%rs41, %rs42, %rs43, %rs44};
+	st.v4.u8 	[%rd10+76], {%rs53, %rs54, %rs55, %rs56};
+	st.v4.u8 	[%rd10+72], {%rs49, %rs50, %rs51, %rs52};
+	st.v4.u8 	[%rd10+84], {%rs61, %rs62, %rs63, %rs64};
+	st.v4.u8 	[%rd10+80], {%rs57, %rs58, %rs59, %rs60};
+	st.v4.u8 	[%rd10+92], {%rs69, %rs70, %rs71, %rs72};
+	st.v4.u8 	[%rd10+88], {%rs65, %rs66, %rs67, %rs68};
+	st.v4.u8 	[%rd10+100], {%rs77, %rs78, %rs79, %rs80};
+	st.v4.u8 	[%rd10+96], {%rs73, %rs74, %rs75, %rs76};
+	st.v4.u8 	[%rd10+108], {%rs85, %rs86, %rs87, %rs88};
+	st.v4.u8 	[%rd10+104], {%rs81, %rs82, %rs83, %rs84};
+	st.v4.u8 	[%rd10+116], {%rs93, %rs94, %rs95, %rs96};
+	st.v4.u8 	[%rd10+112], {%rs89, %rs90, %rs91, %rs92};
+	st.v4.u8 	[%rd10+124], {%rs101, %rs102, %rs103, %rs104};
+	st.v4.u8 	[%rd10+120], {%rs97, %rs98, %rs99, %rs100};
+	st.v4.u8 	[%rd10+132], {%rs109, %rs110, %rs111, %rs112};
+	st.v4.u8 	[%rd10+128], {%rs105, %rs106, %rs107, %rs108};
+	st.v4.u8 	[%rd10+140], {%rs117, %rs118, %rs119, %rs120};
+	st.v4.u8 	[%rd10+136], {%rs113, %rs114, %rs115, %rs116};
+	st.v4.u8 	[%rd10+148], {%rs125, %rs126, %rs127, %rs128};
+	st.v4.u8 	[%rd10+144], {%rs121, %rs122, %rs123, %rs124};
+	st.v4.u8 	[%rd10+156], {%rs133, %rs134, %rs135, %rs136};
+	st.v4.u8 	[%rd10+152], {%rs129, %rs130, %rs131, %rs132};
+	st.v4.u8 	[%rd10+164], {%rs141, %rs142, %rs143, %rs144};
+	st.v4.u8 	[%rd10+160], {%rs137, %rs138, %rs139, %rs140};
+	st.v4.u8 	[%rd10+172], {%rs149, %rs150, %rs151, %rs152};
+	st.v4.u8 	[%rd10+168], {%rs145, %rs146, %rs147, %rs148};
+	st.v4.u8 	[%rd10+180], {%rs157, %rs158, %rs159, %rs160};
+	st.v4.u8 	[%rd10+176], {%rs153, %rs154, %rs155, %rs156};
+	st.v4.u8 	[%rd10+188], {%rs165, %rs166, %rs167, %rs168};
+	st.v4.u8 	[%rd10+184], {%rs161, %rs162, %rs163, %rs164};
+	st.v4.u8 	[%rd10+196], {%rs173, %rs174, %rs175, %rs176};
+	st.v4.u8 	[%rd10+192], {%rs169, %rs170, %rs171, %rs172};
+	st.v4.u8 	[%rd10+204], {%rs181, %rs182, %rs183, %rs184};
+	st.v4.u8 	[%rd10+200], {%rs177, %rs178, %rs179, %rs180};
+	st.v4.u8 	[%rd10+212], {%rs189, %rs190, %rs191, %rs192};
+	st.v4.u8 	[%rd10+208], {%rs185, %rs186, %rs187, %rs188};
+	st.v4.u8 	[%rd10+220], {%rs197, %rs198, %rs199, %rs200};
+	st.v4.u8 	[%rd10+216], {%rs193, %rs194, %rs195, %rs196};
+	st.v4.u8 	[%rd10+228], {%rs205, %rs206, %rs207, %rs208};
+	st.v4.u8 	[%rd10+224], {%rs201, %rs202, %rs203, %rs204};
+	st.v4.u8 	[%rd10+236], {%rs213, %rs214, %rs215, %rs216};
+	st.v4.u8 	[%rd10+232], {%rs209, %rs210, %rs211, %rs212};
+	st.v4.u8 	[%rd10+244], {%rs221, %rs222, %rs223, %rs224};
+	st.v4.u8 	[%rd10+240], {%rs217, %rs218, %rs219, %rs220};
+	st.v4.u8 	[%rd10+252], {%rs229, %rs230, %rs231, %rs232};
+	st.v4.u8 	[%rd10+248], {%rs225, %rs226, %rs227, %rs228};
+	st.v4.u8 	[%rd10+260], {%rs237, %rs238, %rs239, %rs240};
+	st.v4.u8 	[%rd10+256], {%rs233, %rs234, %rs235, %rs236};
+	st.v4.u8 	[%rd10+268], {%rs245, %rs246, %rs247, %rs248};
+	st.v4.u8 	[%rd10+264], {%rs241, %rs242, %rs243, %rs244};
+	st.v4.u8 	[%rd10+276], {%rs253, %rs254, %rs255, %rs256};
+	st.v4.u8 	[%rd10+272], {%rs249, %rs250, %rs251, %rs252};
+	st.v4.u8 	[%rd10+284], {%rs261, %rs262, %rs263, %rs264};
+	st.v4.u8 	[%rd10+280], {%rs257, %rs258, %rs259, %rs260};
+	st.v4.u8 	[%rd10+292], {%rs269, %rs270, %rs271, %rs272};
+	st.v4.u8 	[%rd10+288], {%rs265, %rs266, %rs267, %rs268};
+	st.v4.u8 	[%rd10+300], {%rs277, %rs278, %rs279, %rs280};
+	st.v4.u8 	[%rd10+296], {%rs273, %rs274, %rs275, %rs276};
+	st.v4.u8 	[%rd10+308], {%rs285, %rs286, %rs287, %rs288};
+	st.v4.u8 	[%rd10+304], {%rs281, %rs282, %rs283, %rs284};
+	st.v4.u8 	[%rd10+316], {%rs293, %rs294, %rs295, %rs296};
+	st.v4.u8 	[%rd10+312], {%rs289, %rs290, %rs291, %rs292};
+	st.v4.u8 	[%rd10+324], {%rs301, %rs302, %rs303, %rs304};
+	st.v4.u8 	[%rd10+320], {%rs297, %rs298, %rs299, %rs300};
+	st.v4.u8 	[%rd10+332], {%rs309, %rs310, %rs311, %rs312};
+	st.v4.u8 	[%rd10+328], {%rs305, %rs306, %rs307, %rs308};
+	st.v4.u8 	[%rd10+340], {%rs317, %rs318, %rs319, %rs320};
+	st.v4.u8 	[%rd10+336], {%rs313, %rs314, %rs315, %rs316};
+	st.v4.u8 	[%rd10+348], {%rs325, %rs326, %rs327, %rs328};
+	st.v4.u8 	[%rd10+344], {%rs321, %rs322, %rs323, %rs324};
+	st.v4.u8 	[%rd10+356], {%rs333, %rs334, %rs335, %rs336};
+	st.v4.u8 	[%rd10+352], {%rs329, %rs330, %rs331, %rs332};
+	st.v4.u8 	[%rd10+364], {%rs341, %rs342, %rs343, %rs344};
+	st.v4.u8 	[%rd10+360], {%rs337, %rs338, %rs339, %rs340};
+	st.v4.u8 	[%rd10+372], {%rs349, %rs350, %rs351, %rs352};
+	st.v4.u8 	[%rd10+368], {%rs345, %rs346, %rs347, %rs348};
+	st.v4.u8 	[%rd10+380], {%rs357, %rs358, %rs359, %rs360};
+	st.v4.u8 	[%rd10+376], {%rs353, %rs354, %rs355, %rs356};
+	st.v4.u8 	[%rd10+388], {%rs365, %rs366, %rs367, %rs368};
+	st.v4.u8 	[%rd10+384], {%rs361, %rs362, %rs363, %rs364};
+	st.v4.u8 	[%rd10+396], {%rs373, %rs374, %rs375, %rs376};
+	st.v4.u8 	[%rd10+392], {%rs369, %rs370, %rs371, %rs372};
+	st.v4.u8 	[%rd10+404], {%rs381, %rs382, %rs383, %rs384};
+	st.v4.u8 	[%rd10+400], {%rs377, %rs378, %rs379, %rs380};
+	st.v4.u8 	[%rd10+412], {%rs389, %rs390, %rs391, %rs392};
+	st.v4.u8 	[%rd10+408], {%rs385, %rs386, %rs387, %rs388};
+	st.v4.u8 	[%rd10+420], {%rs397, %rs398, %rs399, %rs400};
+	st.v4.u8 	[%rd10+416], {%rs393, %rs394, %rs395, %rs396};
+	st.v4.u8 	[%rd10+428], {%rs405, %rs406, %rs407, %rs408};
+	st.v4.u8 	[%rd10+424], {%rs401, %rs402, %rs403, %rs404};
+	st.v4.u8 	[%rd10+436], {%rs413, %rs414, %rs415, %rs416};
+	st.v4.u8 	[%rd10+432], {%rs409, %rs410, %rs411, %rs412};
+	st.v4.u8 	[%rd10+444], {%rs421, %rs422, %rs423, %rs424};
+	st.v4.u8 	[%rd10+440], {%rs417, %rs418, %rs419, %rs420};
+	st.v4.u8 	[%rd10+452], {%rs429, %rs430, %rs431, %rs432};
+	st.v4.u8 	[%rd10+448], {%rs425, %rs426, %rs427, %rs428};
+	st.v4.u8 	[%rd10+460], {%rs437, %rs438, %rs439, %rs440};
+	st.v4.u8 	[%rd10+456], {%rs433, %rs434, %rs435, %rs436};
+	st.v4.u8 	[%rd10+468], {%rs445, %rs446, %rs447, %rs448};
+	st.v4.u8 	[%rd10+464], {%rs441, %rs442, %rs443, %rs444};
+	st.v4.u8 	[%rd10+476], {%rs453, %rs454, %rs455, %rs456};
+	st.v4.u8 	[%rd10+472], {%rs449, %rs450, %rs451, %rs452};
+	st.v4.u8 	[%rd10+484], {%rs461, %rs462, %rs463, %rs464};
+	st.v4.u8 	[%rd10+480], {%rs457, %rs458, %rs459, %rs460};
+	st.v4.u8 	[%rd10+492], {%rs469, %rs470, %rs471, %rs472};
+	st.v4.u8 	[%rd10+488], {%rs465, %rs466, %rs467, %rs468};
+	st.v4.u8 	[%rd10+500], {%rs477, %rs478, %rs479, %rs480};
+	st.v4.u8 	[%rd10+496], {%rs473, %rs474, %rs475, %rs476};
+	st.v4.u8 	[%rd10+508], {%rs485, %rs486, %rs487, %rs488};
+	st.v4.u8 	[%rd10+504], {%rs481, %rs482, %rs483, %rs484};
+	st.v4.u8 	[%rd10+516], {%rs493, %rs494, %rs495, %rs496};
+	st.v4.u8 	[%rd10+512], {%rs489, %rs490, %rs491, %rs492};
+	st.v4.u8 	[%rd10+524], {%rs501, %rs502, %rs503, %rs504};
+	st.v4.u8 	[%rd10+520], {%rs497, %rs498, %rs499, %rs500};
+	st.v4.u8 	[%rd10+532], {%rs509, %rs510, %rs511, %rs512};
+	st.v4.u8 	[%rd10+528], {%rs505, %rs506, %rs507, %rs508};
+	st.u64 	[%rd10+536], %rd1;
+	st.u32 	[%rd10+12], %r1;
+	st.u64 	[%rd10+16], %rd7;
+	add.s64 	%rd11, %rd10, 4;
 	mov.u32 	%r3, 42;
 	// begin inline asm
 	.reg .pred p0;                   
 	membar.sys;                      
-	st.global.u32 [%rd5], 1;           
+	st.global.u32 [%rd10], 1;           
 	spin_wait:                       
 	membar.sys;                      
-	ld.global.u32 %r3, [%rd6];          
+	ld.global.u32 %r3, [%rd11];          
 	setp.eq.u32 p0, %r3, 0;           
 	@p0 bra spin_wait;               
-	st.global.u32 [%rd6], 0;           
+	st.global.u32 [%rd11], 0;           
 	membar.sys;                      
 	
 	// end inline asm
-	ld.u64 	%rd7, [%rd5+544];
-	atom.exch.b32 	%r4, [%rd4], 0;
-	st.param.b64 	[func_retval0+0], %rd7;
+	ld.u64 	%rd4, [%rd10+544];
+	atom.exch.b32 	%r4, [%rd9], 0;
+	// begin inline asm
+	mov.u64 %rd12, %globaltimer;
+	// end inline asm
+	setp.gt.s32 	%p2, %r1, 7;
+	@%p2 bra 	$L__BB2_4;
+// %bb.3:
+	mul.wide.s32 	%rd14, %r1, 8;
+	add.s64 	%rd15, %rd10, %rd14;
+	add.s64 	%rd5, %rd15, 552;
+	sub.s64 	%rd6, %rd12, %rd8;
+	ld.u64 	%rd16, [%rd5];
+	add.s64 	%rd17, %rd6, %rd16;
+	st.u64 	[%rd5], %rd17;
+$L__BB2_4:
+	st.param.b64 	[func_retval0+0], %rd4;
 	ret;
                                         // -- End function
 }
@@ -820,31 +837,31 @@ $L__BB3_7:
 	.reg .pred 	%p<9>;
 	.reg .b16 	%rs<8>;
 	.reg .b32 	%r<19>;
-	.reg .b64 	%rd<55>;
+	.reg .b64 	%rd<61>;
 
 // %bb.0:
 	mov.u64 	%SPL, __local_depot4;
 	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd20, [_bpf_helper_ext_0001_param_0];
-	add.u64 	%rd22, %SP, 520;
-	add.u64 	%rd23, %SP, 1040;
-	add.u64 	%rd24, %SPL, 1040;
-	shr.u64 	%rd25, %rd20, 28;
-	and.b64  	%rd26, %rd25, 68719476720;
-	mov.u64 	%rd27, map_info;
-	add.s64 	%rd28, %rd27, %rd26;
-	ld.const.u32 	%r6, [%rd28+4];
-	ld.const.u32 	%r7, [%rd28+8];
-	st.local.u64 	[%rd24], %rd20;
-	st.local.v2.u32 	[%rd24+8], {%r6, %r7};
-	mov.u64 	%rd29, _$_str;
-	cvta.global.u64 	%rd30, %rd29;
+	ld.param.u64 	%rd21, [_bpf_helper_ext_0001_param_0];
+	add.u64 	%rd23, %SP, 520;
+	add.u64 	%rd24, %SP, 1040;
+	add.u64 	%rd25, %SPL, 1040;
+	shr.u64 	%rd26, %rd21, 28;
+	and.b64  	%rd27, %rd26, 68719476720;
+	mov.u64 	%rd28, map_info;
+	add.s64 	%rd29, %rd28, %rd27;
+	ld.const.u32 	%r6, [%rd29+4];
+	ld.const.u32 	%r7, [%rd29+8];
+	st.local.u64 	[%rd25], %rd21;
+	st.local.v2.u32 	[%rd25+8], {%r6, %r7};
+	mov.u64 	%rd30, _$_str;
+	cvta.global.u64 	%rd31, %rd30;
 	{ // callseq 0, 0
 	.reg .b32 temp_param_reg;
 	.param .b64 param0;
-	st.param.b64 	[param0+0], %rd30;
+	st.param.b64 	[param0+0], %rd31;
 	.param .b64 param1;
-	st.param.b64 	[param1+0], %rd23;
+	st.param.b64 	[param1+0], %rd24;
 	.param .b32 retval0;
 	call.uni (retval0), 
 	vprintf, 
@@ -857,8 +874,8 @@ $L__BB3_7:
 	setp.lt.s32 	%p1, %r6, 1;
 	@%p1 bra 	$L__BB4_7;
 // %bb.1:
-	ld.param.u64 	%rd21, [_bpf_helper_ext_0001_param_1];
-	cvta.to.local.u64 	%rd1, %rd22;
+	ld.param.u64 	%rd22, [_bpf_helper_ext_0001_param_1];
+	cvta.to.local.u64 	%rd1, %rd23;
 	cvt.u64.u32 	%rd2, %r6;
 	cvt.u32.u64 	%r11, %rd2;
 	and.b32  	%r18, %r11, 3;
@@ -867,88 +884,98 @@ $L__BB3_7:
 	@%p2 bra 	$L__BB4_4;
 // %bb.2:
 	and.b64  	%rd3, %rd2, 4294967292;
-	add.s64 	%rd4, %rd21, 3;
-	mov.u64 	%rd50, 0;
+	add.s64 	%rd4, %rd22, 3;
+	mov.u64 	%rd56, 0;
 	cvt.u32.u64 	%r12, %rd3;
 $L__BB4_3:                              // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd32, %rd4, %rd50;
-	ld.u8 	%rs1, [%rd32+-3];
-	add.s64 	%rd33, %rd1, %rd50;
-	ld.u8 	%rs2, [%rd32+-2];
-	ld.u8 	%rs3, [%rd32+-1];
-	ld.u8 	%rs4, [%rd32];
-	st.local.v4.u8 	[%rd33], {%rs1, %rs2, %rs3, %rs4};
-	add.s64 	%rd50, %rd50, 4;
-	cvt.u32.u64 	%r17, %rd50;
+	add.s64 	%rd33, %rd4, %rd56;
+	ld.u8 	%rs1, [%rd33+-3];
+	add.s64 	%rd34, %rd1, %rd56;
+	ld.u8 	%rs2, [%rd33+-2];
+	ld.u8 	%rs3, [%rd33+-1];
+	ld.u8 	%rs4, [%rd33];
+	st.local.v4.u8 	[%rd34], {%rs1, %rs2, %rs3, %rs4};
+	add.s64 	%rd56, %rd56, 4;
+	cvt.u32.u64 	%r17, %rd56;
 	setp.ne.s32 	%p3, %r12, %r17;
 	@%p3 bra 	$L__BB4_3;
 $L__BB4_4:
 	setp.eq.s32 	%p4, %r18, 0;
 	@%p4 bra 	$L__BB4_7;
 // %bb.5:
-	cvt.u64.u32 	%rd34, %r17;
-	add.s64 	%rd52, %rd1, %rd34;
-	add.s64 	%rd51, %rd21, %rd34;
+	cvt.u64.u32 	%rd35, %r17;
+	add.s64 	%rd58, %rd1, %rd35;
+	add.s64 	%rd57, %rd22, %rd35;
 $L__BB4_6:                              // =>This Inner Loop Header: Depth=1
 	.pragma "nounroll";
-	ld.u8 	%rs5, [%rd51];
-	st.local.u8 	[%rd52], %rs5;
-	add.s64 	%rd52, %rd52, 1;
-	add.s64 	%rd51, %rd51, 1;
+	ld.u8 	%rs5, [%rd57];
+	st.local.u8 	[%rd58], %rs5;
+	add.s64 	%rd58, %rd58, 1;
+	add.s64 	%rd57, %rd57, 1;
 	add.s32 	%r18, %r18, -1;
 	setp.ne.s32 	%p5, %r18, 0;
 	@%p5 bra 	$L__BB4_6;
 $L__BB4_7:
-	mov.u64 	%rd53, 0;
-	add.u64 	%rd38, %SP, 0;
+	mov.u64 	%rd59, 0;
+	add.u64 	%rd39, %SP, 0;
 $L__BB4_8:                              // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd37, %rd22, %rd53;
-	ld.u8 	%rs6, [%rd37];
-	add.s64 	%rd39, %rd38, %rd53;
-	st.u8 	[%rd39], %rs6;
-	add.s64 	%rd53, %rd53, 1;
-	setp.lt.u64 	%p6, %rd53, 520;
+	add.s64 	%rd38, %rd23, %rd59;
+	ld.u8 	%rs6, [%rd38];
+	add.s64 	%rd40, %rd39, %rd59;
+	st.u8 	[%rd40], %rs6;
+	add.s64 	%rd59, %rd59, 1;
+	setp.lt.u64 	%p6, %rd59, 520;
 	@%p6 bra 	$L__BB4_8;
 // %bb.9:
-	ld.const.u64 	%rd45, [constData];
-	add.s64 	%rd40, %rd45, 8;
+	ld.const.u64 	%rd47, [constData];
+	// begin inline asm
+	mov.u64 %rd41, %globaltimer;
+	// end inline asm
+	add.s64 	%rd42, %rd47, 8;
 $L__BB4_10:                             // =>This Inner Loop Header: Depth=1
-	atom.cas.b32 	%r13, [%rd40], 0, 1;
+	atom.cas.b32 	%r13, [%rd42], 0, 1;
 	setp.eq.s32 	%p7, %r13, 1;
 	@%p7 bra 	$L__BB4_10;
 // %bb.11:
-	add.s64 	%rd17, %rd45, 24;
-	mov.u64 	%rd54, 0;
+	add.s64 	%rd18, %rd47, 24;
+	mov.u64 	%rd60, 0;
 $L__BB4_12:                             // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd43, %rd38, %rd54;
-	ld.u8 	%rs7, [%rd43];
-	add.s64 	%rd44, %rd17, %rd54;
-	st.u8 	[%rd44], %rs7;
-	add.s64 	%rd54, %rd54, 1;
-	setp.lt.u64 	%p8, %rd54, 520;
+	add.s64 	%rd45, %rd39, %rd60;
+	ld.u8 	%rs7, [%rd45];
+	add.s64 	%rd46, %rd18, %rd60;
+	st.u8 	[%rd46], %rs7;
+	add.s64 	%rd60, %rd60, 1;
+	setp.lt.u64 	%p8, %rd60, 520;
 	@%p8 bra 	$L__BB4_12;
 // %bb.13:
 	mov.u32 	%r15, 1;
-	st.u32 	[%rd45+12], %r15;
-	st.u64 	[%rd45+16], %rd20;
-	add.s64 	%rd46, %rd45, 4;
+	st.u32 	[%rd47+12], %r15;
+	st.u64 	[%rd47+16], %rd21;
+	add.s64 	%rd48, %rd47, 4;
 	mov.u32 	%r14, 42;
 	// begin inline asm
 	.reg .pred p0;                   
 	membar.sys;                      
-	st.global.u32 [%rd45], 1;           
+	st.global.u32 [%rd47], 1;           
 	spin_wait:                       
 	membar.sys;                      
-	ld.global.u32 %r14, [%rd46];          
+	ld.global.u32 %r14, [%rd48];          
 	setp.eq.u32 p0, %r14, 0;           
 	@p0 bra spin_wait;               
-	st.global.u32 [%rd46], 0;           
+	st.global.u32 [%rd48], 0;           
 	membar.sys;                      
 	
 	// end inline asm
-	ld.u64 	%rd47, [%rd45+544];
-	atom.exch.b32 	%r16, [%rd40], 0;
-	st.param.b64 	[func_retval0+0], %rd47;
+	ld.u64 	%rd50, [%rd47+544];
+	atom.exch.b32 	%r16, [%rd42], 0;
+	// begin inline asm
+	mov.u64 %rd49, %globaltimer;
+	// end inline asm
+	sub.s64 	%rd52, %rd49, %rd41;
+	ld.u64 	%rd53, [%rd47+560];
+	add.s64 	%rd54, %rd52, %rd53;
+	st.u64 	[%rd47+560], %rd54;
+	st.param.b64 	[func_retval0+0], %rd50;
 	ret;
                                         // -- End function
 }
@@ -967,23 +994,23 @@ $L__BB4_12:                             // =>This Inner Loop Header: Depth=1
 	.reg .pred 	%p<14>;
 	.reg .b16 	%rs<13>;
 	.reg .b32 	%r<28>;
-	.reg .b64 	%rd<77>;
+	.reg .b64 	%rd<83>;
 
 // %bb.0:
 	mov.u64 	%SPL, __local_depot5;
 	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd33, [_bpf_helper_ext_0002_param_0];
-	add.u64 	%rd37, %SP, 520;
+	ld.param.u64 	%rd34, [_bpf_helper_ext_0002_param_0];
+	add.u64 	%rd38, %SP, 520;
 	add.u64 	%rd1, %SPL, 520;
-	shr.u64 	%rd2, %rd33, 32;
-	shl.b64 	%rd38, %rd2, 4;
-	mov.u64 	%rd39, map_info;
-	add.s64 	%rd40, %rd39, %rd38;
-	ld.const.u32 	%r11, [%rd40+4];
+	shr.u64 	%rd2, %rd34, 32;
+	shl.b64 	%rd39, %rd2, 4;
+	mov.u64 	%rd40, map_info;
+	add.s64 	%rd41, %rd40, %rd39;
+	ld.const.u32 	%r11, [%rd41+4];
 	setp.lt.s32 	%p1, %r11, 1;
 	@%p1 bra 	$L__BB5_7;
 // %bb.1:
-	ld.param.u64 	%rd34, [_bpf_helper_ext_0002_param_1];
+	ld.param.u64 	%rd35, [_bpf_helper_ext_0002_param_1];
 	cvt.u64.u32 	%rd3, %r11;
 	cvt.u32.u64 	%r13, %rd3;
 	and.b32  	%r25, %r13, 3;
@@ -992,44 +1019,44 @@ $L__BB4_12:                             // =>This Inner Loop Header: Depth=1
 	@%p2 bra 	$L__BB5_4;
 // %bb.2:
 	and.b64  	%rd4, %rd3, 4294967292;
-	add.s64 	%rd5, %rd34, 3;
-	mov.u64 	%rd69, 0;
+	add.s64 	%rd5, %rd35, 3;
+	mov.u64 	%rd75, 0;
 	cvt.u32.u64 	%r14, %rd4;
 $L__BB5_3:                              // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd42, %rd5, %rd69;
-	ld.u8 	%rs1, [%rd42+-3];
-	add.s64 	%rd43, %rd1, %rd69;
-	ld.u8 	%rs2, [%rd42+-2];
-	ld.u8 	%rs3, [%rd42+-1];
-	ld.u8 	%rs4, [%rd42];
-	st.local.v4.u8 	[%rd43], {%rs1, %rs2, %rs3, %rs4};
-	add.s64 	%rd69, %rd69, 4;
-	cvt.u32.u64 	%r24, %rd69;
+	add.s64 	%rd43, %rd5, %rd75;
+	ld.u8 	%rs1, [%rd43+-3];
+	add.s64 	%rd44, %rd1, %rd75;
+	ld.u8 	%rs2, [%rd43+-2];
+	ld.u8 	%rs3, [%rd43+-1];
+	ld.u8 	%rs4, [%rd43];
+	st.local.v4.u8 	[%rd44], {%rs1, %rs2, %rs3, %rs4};
+	add.s64 	%rd75, %rd75, 4;
+	cvt.u32.u64 	%r24, %rd75;
 	setp.ne.s32 	%p3, %r14, %r24;
 	@%p3 bra 	$L__BB5_3;
 $L__BB5_4:
 	setp.eq.s32 	%p4, %r25, 0;
 	@%p4 bra 	$L__BB5_7;
 // %bb.5:
-	cvt.u64.u32 	%rd44, %r24;
-	add.s64 	%rd71, %rd1, %rd44;
-	add.s64 	%rd70, %rd34, %rd44;
+	cvt.u64.u32 	%rd45, %r24;
+	add.s64 	%rd77, %rd1, %rd45;
+	add.s64 	%rd76, %rd35, %rd45;
 $L__BB5_6:                              // =>This Inner Loop Header: Depth=1
 	.pragma "nounroll";
-	ld.u8 	%rs5, [%rd70];
-	st.local.u8 	[%rd71], %rs5;
-	add.s64 	%rd71, %rd71, 1;
-	add.s64 	%rd70, %rd70, 1;
+	ld.u8 	%rs5, [%rd76];
+	st.local.u8 	[%rd77], %rs5;
+	add.s64 	%rd77, %rd77, 1;
+	add.s64 	%rd76, %rd76, 1;
 	add.s32 	%r25, %r25, -1;
 	setp.ne.s32 	%p5, %r25, 0;
 	@%p5 bra 	$L__BB5_6;
 $L__BB5_7:
-	ld.param.u64 	%rd36, [_bpf_helper_ext_0002_param_3];
-	ld.const.u32 	%r15, [%rd40+8];
+	ld.param.u64 	%rd37, [_bpf_helper_ext_0002_param_3];
+	ld.const.u32 	%r15, [%rd41+8];
 	setp.lt.s32 	%p6, %r15, 1;
 	@%p6 bra 	$L__BB5_14;
 // %bb.8:
-	ld.param.u64 	%rd35, [_bpf_helper_ext_0002_param_2];
+	ld.param.u64 	%rd36, [_bpf_helper_ext_0002_param_2];
 	mov.u32 	%r26, 0;
 	cvt.u64.u32 	%rd15, %r15;
 	cvt.u32.u64 	%r17, %rd15;
@@ -1039,90 +1066,100 @@ $L__BB5_7:
 // %bb.9:
 	add.s64 	%rd14, %rd1, 256;
 	and.b64  	%rd16, %rd15, 4294967292;
-	add.s64 	%rd17, %rd35, 3;
-	mov.u64 	%rd72, 0;
+	add.s64 	%rd17, %rd36, 3;
+	mov.u64 	%rd78, 0;
 	cvt.u32.u64 	%r18, %rd16;
 $L__BB5_10:                             // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd49, %rd17, %rd72;
-	ld.u8 	%rs6, [%rd49+-3];
-	add.s64 	%rd50, %rd14, %rd72;
-	ld.u8 	%rs7, [%rd49+-2];
-	ld.u8 	%rs8, [%rd49+-1];
-	ld.u8 	%rs9, [%rd49];
-	st.local.v4.u8 	[%rd50], {%rs6, %rs7, %rs8, %rs9};
-	add.s64 	%rd72, %rd72, 4;
-	cvt.u32.u64 	%r26, %rd72;
+	add.s64 	%rd50, %rd17, %rd78;
+	ld.u8 	%rs6, [%rd50+-3];
+	add.s64 	%rd51, %rd14, %rd78;
+	ld.u8 	%rs7, [%rd50+-2];
+	ld.u8 	%rs8, [%rd50+-1];
+	ld.u8 	%rs9, [%rd50];
+	st.local.v4.u8 	[%rd51], {%rs6, %rs7, %rs8, %rs9};
+	add.s64 	%rd78, %rd78, 4;
+	cvt.u32.u64 	%r26, %rd78;
 	setp.ne.s32 	%p8, %r18, %r26;
 	@%p8 bra 	$L__BB5_10;
 $L__BB5_11:
 	setp.eq.s32 	%p9, %r27, 0;
 	@%p9 bra 	$L__BB5_14;
 // %bb.12:
-	cvt.u64.u32 	%rd51, %r26;
-	add.s64 	%rd52, %rd51, %rd1;
-	add.s64 	%rd74, %rd52, 256;
-	add.s64 	%rd73, %rd35, %rd51;
+	cvt.u64.u32 	%rd52, %r26;
+	add.s64 	%rd53, %rd52, %rd1;
+	add.s64 	%rd80, %rd53, 256;
+	add.s64 	%rd79, %rd36, %rd52;
 $L__BB5_13:                             // =>This Inner Loop Header: Depth=1
 	.pragma "nounroll";
-	ld.u8 	%rs10, [%rd73];
-	st.local.u8 	[%rd74], %rs10;
-	add.s64 	%rd74, %rd74, 1;
-	add.s64 	%rd73, %rd73, 1;
+	ld.u8 	%rs10, [%rd79];
+	st.local.u8 	[%rd80], %rs10;
+	add.s64 	%rd80, %rd80, 1;
+	add.s64 	%rd79, %rd79, 1;
 	add.s32 	%r27, %r27, -1;
 	setp.ne.s32 	%p10, %r27, 0;
 	@%p10 bra 	$L__BB5_13;
 $L__BB5_14:
-	mov.u64 	%rd75, 0;
-	st.local.u64 	[%rd1+512], %rd36;
-	add.u64 	%rd56, %SP, 0;
+	mov.u64 	%rd81, 0;
+	st.local.u64 	[%rd1+512], %rd37;
+	add.u64 	%rd57, %SP, 0;
 $L__BB5_15:                             // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd55, %rd37, %rd75;
-	ld.u8 	%rs11, [%rd55];
-	add.s64 	%rd57, %rd56, %rd75;
-	st.u8 	[%rd57], %rs11;
-	add.s64 	%rd75, %rd75, 1;
-	setp.lt.u64 	%p11, %rd75, 520;
+	add.s64 	%rd56, %rd38, %rd81;
+	ld.u8 	%rs11, [%rd56];
+	add.s64 	%rd58, %rd57, %rd81;
+	st.u8 	[%rd58], %rs11;
+	add.s64 	%rd81, %rd81, 1;
+	setp.lt.u64 	%p11, %rd81, 520;
 	@%p11 bra 	$L__BB5_15;
 // %bb.16:
-	ld.const.u64 	%rd63, [constData];
-	add.s64 	%rd58, %rd63, 8;
+	ld.const.u64 	%rd65, [constData];
+	// begin inline asm
+	mov.u64 %rd59, %globaltimer;
+	// end inline asm
+	add.s64 	%rd60, %rd65, 8;
 $L__BB5_17:                             // =>This Inner Loop Header: Depth=1
-	atom.cas.b32 	%r19, [%rd58], 0, 1;
+	atom.cas.b32 	%r19, [%rd60], 0, 1;
 	setp.eq.s32 	%p12, %r19, 1;
 	@%p12 bra 	$L__BB5_17;
 // %bb.18:
-	add.s64 	%rd30, %rd63, 24;
-	mov.u64 	%rd76, 0;
+	add.s64 	%rd31, %rd65, 24;
+	mov.u64 	%rd82, 0;
 $L__BB5_19:                             // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd61, %rd56, %rd76;
-	ld.u8 	%rs12, [%rd61];
-	add.s64 	%rd62, %rd30, %rd76;
-	st.u8 	[%rd62], %rs12;
-	add.s64 	%rd76, %rd76, 1;
-	setp.lt.u64 	%p13, %rd76, 520;
+	add.s64 	%rd63, %rd57, %rd82;
+	ld.u8 	%rs12, [%rd63];
+	add.s64 	%rd64, %rd31, %rd82;
+	st.u8 	[%rd64], %rs12;
+	add.s64 	%rd82, %rd82, 1;
+	setp.lt.u64 	%p13, %rd82, 520;
 	@%p13 bra 	$L__BB5_19;
 // %bb.20:
 	mov.u32 	%r21, 2;
-	st.u32 	[%rd63+12], %r21;
-	st.u64 	[%rd63+16], %rd33;
-	add.s64 	%rd64, %rd63, 4;
+	st.u32 	[%rd65+12], %r21;
+	st.u64 	[%rd65+16], %rd34;
+	add.s64 	%rd66, %rd65, 4;
 	mov.u32 	%r20, 42;
 	// begin inline asm
 	.reg .pred p0;                   
 	membar.sys;                      
-	st.global.u32 [%rd63], 1;           
+	st.global.u32 [%rd65], 1;           
 	spin_wait:                       
 	membar.sys;                      
-	ld.global.u32 %r20, [%rd64];          
+	ld.global.u32 %r20, [%rd66];          
 	setp.eq.u32 p0, %r20, 0;           
 	@p0 bra spin_wait;               
-	st.global.u32 [%rd64], 0;           
+	st.global.u32 [%rd66], 0;           
 	membar.sys;                      
 	
 	// end inline asm
-	ld.s32 	%rd65, [%rd63+544];
-	atom.exch.b32 	%r22, [%rd58], 0;
-	st.param.b64 	[func_retval0+0], %rd65;
+	ld.s32 	%rd68, [%rd65+544];
+	atom.exch.b32 	%r22, [%rd60], 0;
+	// begin inline asm
+	mov.u64 %rd67, %globaltimer;
+	// end inline asm
+	sub.s64 	%rd70, %rd67, %rd59;
+	ld.u64 	%rd71, [%rd65+568];
+	add.s64 	%rd72, %rd70, %rd71;
+	st.u64 	[%rd65+568], %rd72;
+	st.param.b64 	[func_retval0+0], %rd68;
 	ret;
                                         // -- End function
 }
@@ -1141,23 +1178,23 @@ $L__BB5_19:                             // =>This Inner Loop Header: Depth=1
 	.reg .pred 	%p<9>;
 	.reg .b16 	%rs<8>;
 	.reg .b32 	%r<16>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<57>;
 
 // %bb.0:
 	mov.u64 	%SPL, __local_depot6;
 	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd20, [_bpf_helper_ext_0003_param_0];
-	add.u64 	%rd22, %SP, 520;
-	shr.u64 	%rd23, %rd20, 28;
-	and.b64  	%rd24, %rd23, 68719476720;
-	mov.u64 	%rd25, map_info;
-	add.s64 	%rd26, %rd25, %rd24;
-	ld.const.u32 	%r6, [%rd26+4];
+	ld.param.u64 	%rd21, [_bpf_helper_ext_0003_param_0];
+	add.u64 	%rd23, %SP, 520;
+	shr.u64 	%rd24, %rd21, 28;
+	and.b64  	%rd25, %rd24, 68719476720;
+	mov.u64 	%rd26, map_info;
+	add.s64 	%rd27, %rd26, %rd25;
+	ld.const.u32 	%r6, [%rd27+4];
 	setp.lt.s32 	%p1, %r6, 1;
 	@%p1 bra 	$L__BB6_7;
 // %bb.1:
-	ld.param.u64 	%rd21, [_bpf_helper_ext_0003_param_1];
-	cvta.to.local.u64 	%rd1, %rd22;
+	ld.param.u64 	%rd22, [_bpf_helper_ext_0003_param_1];
+	cvta.to.local.u64 	%rd1, %rd23;
 	cvt.u64.u32 	%rd2, %r6;
 	cvt.u32.u64 	%r8, %rd2;
 	and.b32  	%r15, %r8, 3;
@@ -1166,88 +1203,98 @@ $L__BB5_19:                             // =>This Inner Loop Header: Depth=1
 	@%p2 bra 	$L__BB6_4;
 // %bb.2:
 	and.b64  	%rd3, %rd2, 4294967292;
-	add.s64 	%rd4, %rd21, 3;
-	mov.u64 	%rd46, 0;
+	add.s64 	%rd4, %rd22, 3;
+	mov.u64 	%rd52, 0;
 	cvt.u32.u64 	%r9, %rd3;
 $L__BB6_3:                              // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd28, %rd4, %rd46;
-	ld.u8 	%rs1, [%rd28+-3];
-	add.s64 	%rd29, %rd1, %rd46;
-	ld.u8 	%rs2, [%rd28+-2];
-	ld.u8 	%rs3, [%rd28+-1];
-	ld.u8 	%rs4, [%rd28];
-	st.local.v4.u8 	[%rd29], {%rs1, %rs2, %rs3, %rs4};
-	add.s64 	%rd46, %rd46, 4;
-	cvt.u32.u64 	%r14, %rd46;
+	add.s64 	%rd29, %rd4, %rd52;
+	ld.u8 	%rs1, [%rd29+-3];
+	add.s64 	%rd30, %rd1, %rd52;
+	ld.u8 	%rs2, [%rd29+-2];
+	ld.u8 	%rs3, [%rd29+-1];
+	ld.u8 	%rs4, [%rd29];
+	st.local.v4.u8 	[%rd30], {%rs1, %rs2, %rs3, %rs4};
+	add.s64 	%rd52, %rd52, 4;
+	cvt.u32.u64 	%r14, %rd52;
 	setp.ne.s32 	%p3, %r9, %r14;
 	@%p3 bra 	$L__BB6_3;
 $L__BB6_4:
 	setp.eq.s32 	%p4, %r15, 0;
 	@%p4 bra 	$L__BB6_7;
 // %bb.5:
-	cvt.u64.u32 	%rd30, %r14;
-	add.s64 	%rd48, %rd1, %rd30;
-	add.s64 	%rd47, %rd21, %rd30;
+	cvt.u64.u32 	%rd31, %r14;
+	add.s64 	%rd54, %rd1, %rd31;
+	add.s64 	%rd53, %rd22, %rd31;
 $L__BB6_6:                              // =>This Inner Loop Header: Depth=1
 	.pragma "nounroll";
-	ld.u8 	%rs5, [%rd47];
-	st.local.u8 	[%rd48], %rs5;
-	add.s64 	%rd48, %rd48, 1;
-	add.s64 	%rd47, %rd47, 1;
+	ld.u8 	%rs5, [%rd53];
+	st.local.u8 	[%rd54], %rs5;
+	add.s64 	%rd54, %rd54, 1;
+	add.s64 	%rd53, %rd53, 1;
 	add.s32 	%r15, %r15, -1;
 	setp.ne.s32 	%p5, %r15, 0;
 	@%p5 bra 	$L__BB6_6;
 $L__BB6_7:
-	mov.u64 	%rd49, 0;
-	add.u64 	%rd34, %SP, 0;
+	mov.u64 	%rd55, 0;
+	add.u64 	%rd35, %SP, 0;
 $L__BB6_8:                              // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd33, %rd22, %rd49;
-	ld.u8 	%rs6, [%rd33];
-	add.s64 	%rd35, %rd34, %rd49;
-	st.u8 	[%rd35], %rs6;
-	add.s64 	%rd49, %rd49, 1;
-	setp.lt.u64 	%p6, %rd49, 520;
+	add.s64 	%rd34, %rd23, %rd55;
+	ld.u8 	%rs6, [%rd34];
+	add.s64 	%rd36, %rd35, %rd55;
+	st.u8 	[%rd36], %rs6;
+	add.s64 	%rd55, %rd55, 1;
+	setp.lt.u64 	%p6, %rd55, 520;
 	@%p6 bra 	$L__BB6_8;
 // %bb.9:
-	ld.const.u64 	%rd41, [constData];
-	add.s64 	%rd36, %rd41, 8;
+	ld.const.u64 	%rd43, [constData];
+	// begin inline asm
+	mov.u64 %rd37, %globaltimer;
+	// end inline asm
+	add.s64 	%rd38, %rd43, 8;
 $L__BB6_10:                             // =>This Inner Loop Header: Depth=1
-	atom.cas.b32 	%r10, [%rd36], 0, 1;
+	atom.cas.b32 	%r10, [%rd38], 0, 1;
 	setp.eq.s32 	%p7, %r10, 1;
 	@%p7 bra 	$L__BB6_10;
 // %bb.11:
-	add.s64 	%rd17, %rd41, 24;
-	mov.u64 	%rd50, 0;
+	add.s64 	%rd18, %rd43, 24;
+	mov.u64 	%rd56, 0;
 $L__BB6_12:                             // =>This Inner Loop Header: Depth=1
-	add.s64 	%rd39, %rd34, %rd50;
-	ld.u8 	%rs7, [%rd39];
-	add.s64 	%rd40, %rd17, %rd50;
-	st.u8 	[%rd40], %rs7;
-	add.s64 	%rd50, %rd50, 1;
-	setp.lt.u64 	%p8, %rd50, 520;
+	add.s64 	%rd41, %rd35, %rd56;
+	ld.u8 	%rs7, [%rd41];
+	add.s64 	%rd42, %rd18, %rd56;
+	st.u8 	[%rd42], %rs7;
+	add.s64 	%rd56, %rd56, 1;
+	setp.lt.u64 	%p8, %rd56, 520;
 	@%p8 bra 	$L__BB6_12;
 // %bb.13:
 	mov.u32 	%r12, 3;
-	st.u32 	[%rd41+12], %r12;
-	st.u64 	[%rd41+16], %rd20;
-	add.s64 	%rd42, %rd41, 4;
+	st.u32 	[%rd43+12], %r12;
+	st.u64 	[%rd43+16], %rd21;
+	add.s64 	%rd44, %rd43, 4;
 	mov.u32 	%r11, 42;
 	// begin inline asm
 	.reg .pred p0;                   
 	membar.sys;                      
-	st.global.u32 [%rd41], 1;           
+	st.global.u32 [%rd43], 1;           
 	spin_wait:                       
 	membar.sys;                      
-	ld.global.u32 %r11, [%rd42];          
+	ld.global.u32 %r11, [%rd44];          
 	setp.eq.u32 p0, %r11, 0;           
 	@p0 bra spin_wait;               
-	st.global.u32 [%rd42], 0;           
+	st.global.u32 [%rd44], 0;           
 	membar.sys;                      
 	
 	// end inline asm
-	ld.s32 	%rd43, [%rd41+544];
-	atom.exch.b32 	%r13, [%rd36], 0;
-	st.param.b64 	[func_retval0+0], %rd43;
+	ld.s32 	%rd46, [%rd43+544];
+	atom.exch.b32 	%r13, [%rd38], 0;
+	// begin inline asm
+	mov.u64 %rd45, %globaltimer;
+	// end inline asm
+	sub.s64 	%rd48, %rd45, %rd37;
+	ld.u64 	%rd49, [%rd43+576];
+	add.s64 	%rd50, %rd48, %rd49;
+	st.u64 	[%rd43+576], %rd50;
+	st.param.b64 	[func_retval0+0], %rd46;
 	ret;
                                         // -- End function
 }
