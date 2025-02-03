@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cuda_runtime.h>
 #include <iostream>
+#include <iterator>
 #include <ostream>
 #include <string>
 #include <thread>
@@ -53,6 +54,7 @@ struct SharedMem {
 	long map_id;
 	CallRequest req;
 	CallResponse resp;
+	uint64_t time_sum[8];
 };
 
 struct MapBasicInfo {
@@ -61,6 +63,13 @@ struct MapBasicInfo {
 	int value_size;
 	int max_entries;
 };
+
+__device__ __forceinline__ uint64_t read_globaltimer()
+{
+	uint64_t timestamp;
+	asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(timestamp));
+	return timestamp;
+}
 
 __constant__ uintptr_t constData;
 __constant__ MapBasicInfo map_info[256];
@@ -85,6 +94,7 @@ extern "C" __device__ CallResponse make_map_call(long map_id, int req_id,
 	SharedMem *g_data = (SharedMem *)constData;
 	// printf("make_map_call at %d, constdata=%lx\n",
 	//        threadIdx.x + blockIdx.x * blockDim.x, (uintptr_t)g_data);
+	auto start_time = read_globaltimer();
 	spin_lock(&g_data->occupy_flag);
 	// 准备要写入的参数值
 	int val = 42; // 这里就写一个固定值，示例用
@@ -115,6 +125,9 @@ extern "C" __device__ CallResponse make_map_call(long map_id, int req_id,
 	CallResponse resp = g_data->resp;
 
 	spin_unlock(&g_data->occupy_flag);
+	auto end_time = read_globaltimer();
+	if (req_id < 8)
+		g_data->time_sum[req_id] += (end_time - start_time);
 	return resp;
 }
 
@@ -290,7 +303,8 @@ int main()
 
 				// 处理一次就退出本线程循环
 				// break;
-				std::cout << "handle done" << std::endl;
+				std::cout << "handle done, timesum = "
+					  << hostMem->time_sum[1] << std::endl;
 			}
 
 			// 为了演示，这里短暂休眠，避免100%占用CPU
