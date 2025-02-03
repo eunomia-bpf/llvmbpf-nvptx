@@ -61,7 +61,7 @@ $L__BB0_1:                              // =>This Inner Loop Header: Depth=1
 	.reg .pred 	%p<3>;
 	.reg .b16 	%rs<513>;
 	.reg .b32 	%r<5>;
-	.reg .b64 	%rd<18>;
+	.reg .b64 	%rd<17>;
 
 // %bb.0:
 	ld.param.u32 	%r1, [make_map_call_param_1];
@@ -743,13 +743,11 @@ $L__BB2_1:                              // =>This Inner Loop Header: Depth=1
 	setp.gt.s32 	%p2, %r1, 7;
 	@%p2 bra 	$L__BB2_4;
 // %bb.3:
+	sub.s64 	%rd5, %rd12, %rd8;
 	mul.wide.s32 	%rd14, %r1, 8;
 	add.s64 	%rd15, %rd10, %rd14;
-	add.s64 	%rd5, %rd15, 552;
-	sub.s64 	%rd6, %rd12, %rd8;
-	ld.u64 	%rd16, [%rd5];
-	add.s64 	%rd17, %rd6, %rd16;
-	st.u64 	[%rd5], %rd17;
+	add.s64 	%rd6, %rd15, 552;
+	atom.add.u64 	%rd16, [%rd6], %rd5;
 $L__BB2_4:
 	st.param.b64 	[func_retval0+0], %rd4;
 	ret;
@@ -948,9 +946,8 @@ $L__BB4_12:                             // =>This Inner Loop Header: Depth=1
 	mov.u64 %rd45, %globaltimer;
 	// end inline asm
 	sub.s64 	%rd48, %rd45, %rd37;
-	ld.u64 	%rd49, [%rd43+560];
-	add.s64 	%rd50, %rd48, %rd49;
-	st.u64 	[%rd43+560], %rd50;
+	add.s64 	%rd49, %rd43, 560;
+	atom.add.u64 	%rd50, [%rd49], %rd48;
 	st.param.b64 	[func_retval0+0], %rd46;
 	ret;
                                         // -- End function
@@ -1132,9 +1129,8 @@ $L__BB5_19:                             // =>This Inner Loop Header: Depth=1
 	mov.u64 %rd67, %globaltimer;
 	// end inline asm
 	sub.s64 	%rd70, %rd67, %rd59;
-	ld.u64 	%rd71, [%rd65+568];
-	add.s64 	%rd72, %rd70, %rd71;
-	st.u64 	[%rd65+568], %rd72;
+	add.s64 	%rd71, %rd65, 568;
+	atom.add.u64 	%rd72, [%rd71], %rd70;
 	st.param.b64 	[func_retval0+0], %rd68;
 	ret;
                                         // -- End function
@@ -1267,9 +1263,8 @@ $L__BB6_12:                             // =>This Inner Loop Header: Depth=1
 	mov.u64 %rd45, %globaltimer;
 	// end inline asm
 	sub.s64 	%rd48, %rd45, %rd37;
-	ld.u64 	%rd49, [%rd43+576];
-	add.s64 	%rd50, %rd48, %rd49;
-	st.u64 	[%rd43+576], %rd50;
+	add.s64 	%rd49, %rd43, 576;
+	atom.add.u64 	%rd50, [%rd49], %rd48;
 	st.param.b64 	[func_retval0+0], %rd46;
 	ret;
                                         // -- End function
