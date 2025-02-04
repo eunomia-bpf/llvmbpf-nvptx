@@ -94,7 +94,7 @@ $L__BB2_1:                              // =>This Inner Loop Header: Depth=1
 	membar.sys;                      
 	
 	// end inline asm
-	ld.u64 	%rd3, [%rd9+2097184];
+	ld.u64 	%rd3, [%rd9+2147483680];
 	atom.exch.b32 	%r4, [%rd8], 0;
 	// begin inline asm
 	mov.u64 %rd11, %globaltimer;
@@ -105,7 +105,7 @@ $L__BB2_1:                              // =>This Inner Loop Header: Depth=1
 	sub.s64 	%rd4, %rd11, %rd7;
 	mul.wide.s32 	%rd13, %r1, 8;
 	add.s64 	%rd14, %rd9, %rd13;
-	add.s64 	%rd5, %rd14, 2097192;
+	add.s64 	%rd5, %rd14, 2147483688;
 	atom.add.u64 	%rd15, [%rd5], %rd4;
 $L__BB2_4:
 	st.param.b64 	[func_retval0+0], %rd3;
@@ -210,13 +210,13 @@ $L__BB3_8:                              // =>This Inner Loop Header: Depth=1
 	membar.sys;                      
 	
 	// end inline asm
-	ld.u64 	%rd31, [%rd28+2097184];
+	ld.u64 	%rd31, [%rd28+2147483680];
 	atom.exch.b32 	%r13, [%rd27], 0;
 	// begin inline asm
 	mov.u64 %rd30, %globaltimer;
 	// end inline asm
 	sub.s64 	%rd33, %rd30, %rd26;
-	add.s64 	%rd34, %rd28, 2097200;
+	add.s64 	%rd34, %rd28, 2147483696;
 	atom.add.u64 	%rd35, [%rd34], %rd33;
 	st.param.b64 	[func_retval0+0], %rd31;
 	ret;
@@ -306,7 +306,7 @@ $L__BB4_7:
 	setp.lt.u32 	%p7, %r17, 4;
 	@%p7 bra 	$L__BB4_11;
 // %bb.9:
-	add.s64 	%rd15, %rd50, 1048600;
+	add.s64 	%rd15, %rd50, 1073741848;
 	and.b64  	%rd17, %rd16, 4294967292;
 	add.s64 	%rd18, %rd30, 3;
 	mov.u64 	%rd61, 0;
@@ -332,7 +332,7 @@ $L__BB4_11:
 // %bb.12:
 	cvt.u64.u32 	%rd46, %r26;
 	add.s64 	%rd47, %rd46, %rd50;
-	add.s64 	%rd63, %rd47, 1048600;
+	add.s64 	%rd63, %rd47, 1073741848;
 	add.s64 	%rd62, %rd30, %rd46;
 $L__BB4_13:                             // =>This Inner Loop Header: Depth=1
 	.pragma "nounroll";
@@ -344,7 +344,7 @@ $L__BB4_13:                             // =>This Inner Loop Header: Depth=1
 	setp.ne.s32 	%p10, %r27, 0;
 	@%p10 bra 	$L__BB4_13;
 $L__BB4_14:
-	st.u64 	[%rd50+2097176], %rd31;
+	st.u64 	[%rd50+2147483672], %rd31;
 	// begin inline asm
 	mov.u64 %rd48, %globaltimer;
 	// end inline asm
@@ -372,13 +372,13 @@ $L__BB4_15:                             // =>This Inner Loop Header: Depth=1
 	membar.sys;                      
 	
 	// end inline asm
-	ld.s32 	%rd53, [%rd50+2097184];
+	ld.s32 	%rd53, [%rd50+2147483680];
 	atom.exch.b32 	%r22, [%rd49], 0;
 	// begin inline asm
 	mov.u64 %rd52, %globaltimer;
 	// end inline asm
 	sub.s64 	%rd55, %rd52, %rd48;
-	add.s64 	%rd56, %rd50, 2097208;
+	add.s64 	%rd56, %rd50, 2147483704;
 	atom.add.u64 	%rd57, [%rd56], %rd55;
 	st.param.b64 	[func_retval0+0], %rd53;
 	ret;
@@ -482,13 +482,13 @@ $L__BB5_8:                              // =>This Inner Loop Header: Depth=1
 	membar.sys;                      
 	
 	// end inline asm
-	ld.s32 	%rd31, [%rd28+2097184];
+	ld.s32 	%rd31, [%rd28+2147483680];
 	atom.exch.b32 	%r13, [%rd27], 0;
 	// begin inline asm
 	mov.u64 %rd30, %globaltimer;
 	// end inline asm
 	sub.s64 	%rd33, %rd30, %rd26;
-	add.s64 	%rd34, %rd28, 2097216;
+	add.s64 	%rd34, %rd28, 2147483712;
 	atom.add.u64 	%rd35, [%rd34], %rd33;
 	st.param.b64 	[func_retval0+0], %rd31;
 	ret;
