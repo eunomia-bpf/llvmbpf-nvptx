@@ -21,15 +21,15 @@ enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
 
 union CallRequest {
 	struct {
-		char key[1 << 20];
+		char key[1 << 30];
 	} map_lookup;
 	struct {
-		char key[1 << 20];
-		char value[1 << 20];
+		char key[1 << 30];
+		char value[1 << 30];
 		uint64_t flags;
 	} map_update;
 	struct {
-		char key[1 << 20];
+		char key[1 << 30];
 	} map_delete;
 };
 
