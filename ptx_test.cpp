@@ -96,8 +96,10 @@ static const struct ebpf_inst test_prog[] = {
 	{ EBPF_OP_MOV64_REG, 2, 10, 0, 0 },
 	// r2 += -16
 	{ EBPF_OP_ADD64_IMM, 2, 0, 0, -16 },
-	// r1 = 1
-	{ EBPF_OP_MOV64_IMM, 1, 0, 0, 1 },
+	// r1 = 1<<32
+	{ EBPF_OP_LDDW, 1, 0, 0, 0 },
+	{ 0, 0, 0, 0, 1 },
+
 	// CALL 1
 	{ EBPF_OP_CALL, 0, 0, 0, 1 },
 	// r1 = *(u32 *)(r0 + 0)
@@ -168,15 +170,15 @@ enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
 
 union CallRequest {
 	struct {
-		char key[256];
+		char key[1 << 20];
 	} map_lookup;
 	struct {
-		char key[256];
-		char value[256];
+		char key[1 << 20];
+		char value[1 << 20];
 		uint64_t flags;
 	} map_update;
 	struct {
-		char key[256];
+		char key[1 << 20];
 	} map_delete;
 };
 
@@ -199,9 +201,10 @@ struct SharedMem {
 	int flag2;
 	int occupy_flag;
 	int request_id;
-	int map_id;
+	long map_id;
 	CallRequest req;
 	CallResponse resp;
+	uint64_t time_sum[8];
 };
 struct MapBasicInfo {
 	bool enabled;
