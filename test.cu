@@ -13,22 +13,23 @@
 #include <vector>
 
 /**
- * @brief Compile with clang-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
+ * @brief Compile with clang++-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
+ * -L /usr/local/cuda/lib64/ -lcudart
  *
  */
 enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
 
 union CallRequest {
 	struct {
-		char key[1024];
+		char key[1 << 20];
 	} map_lookup;
 	struct {
-		char key[1024];
-		char value[1024];
+		char key[1 << 20];
+		char value[1 << 20];
 		uint64_t flags;
 	} map_update;
 	struct {
-		char key[1024];
+		char key[1 << 20];
 	} map_delete;
 };
 
@@ -88,8 +89,7 @@ extern "C" __device__ void spin_unlock(int *lock)
 	// printf("lock released by %d\n", threadIdx.x + blockIdx.x *
 	// blockDim.x);
 }
-extern "C" __device__ CallResponse make_map_call(long map_id, int req_id,
-						 CallRequest req)
+extern "C" __device__ CallResponse make_map_call(long map_id, int req_id)
 {
 	SharedMem *g_data = (SharedMem *)constData;
 	// printf("make_map_call at %d, constdata=%lx\n",
@@ -98,7 +98,7 @@ extern "C" __device__ CallResponse make_map_call(long map_id, int req_id,
 	spin_lock(&g_data->occupy_flag);
 	// 准备要写入的参数值
 	int val = 42; // 这里就写一个固定值，示例用
-	g_data->req = req;
+	// g_data->req = req;
 	g_data->request_id = req_id;
 	g_data->map_id = map_id;
 	// printf("making call for %d\n", req_id);
@@ -133,7 +133,7 @@ extern "C" __device__ CallResponse make_map_call(long map_id, int req_id,
 	return resp;
 }
 
-extern "C" __device__ void simple_memcpy(void *dst, void *src, int sz)
+extern "C" __device__ inline void simple_memcpy(void *dst, void *src, int sz)
 {
 	for (int i = 0; i < sz; i++)
 		((char *)dst)[i] = ((char *)src)[i];
@@ -142,15 +142,16 @@ extern "C" __device__ void simple_memcpy(void *dst, void *src, int sz)
 extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 	uint64_t map, uint64_t key, uint64_t a, uint64_t b, uint64_t c)
 {
-	CallRequest req;
+	SharedMem *global_data = (SharedMem *)constData;
+	auto &req = global_data->req;
+	// CallRequest req;
 	const auto &map_info = ::map_info[map >> 32];
 	// printf("helper1 map %ld keysize=%d valuesize=%d\n", map,
 	//        map_info.key_size, map_info.value_size);
 	simple_memcpy(&req.map_lookup.key, (void *)(uintptr_t)key,
 		      map_info.key_size);
 
-	CallResponse resp =
-		make_map_call((long)map, (int)MapOperation::LOOKUP, req);
+	CallResponse resp = make_map_call((long)map, (int)MapOperation::LOOKUP);
 
 	return (uintptr_t)resp.map_lookup.value;
 }
@@ -158,7 +159,8 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0002(
 	uint64_t map, uint64_t key, uint64_t value, uint64_t flags, uint64_t a)
 {
-	CallRequest req;
+	SharedMem *global_data = (SharedMem *)constData;
+	auto &req = global_data->req;
 	const auto &map_info = ::map_info[map >> 32];
 	// printf("helper2 map %ld keysize=%d
 	// valuesize=%d\n",map,map_info.key_size,map_info.value_size);
@@ -168,35 +170,33 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0002(
 		      map_info.value_size);
 	req.map_update.flags = (uintptr_t)flags;
 
-	CallResponse resp =
-		make_map_call((long)map, (int)MapOperation::UPDATE, req);
+	CallResponse resp = make_map_call((long)map, (int)MapOperation::UPDATE);
 	return resp.map_update.result;
 }
 
 extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0003(
 	uint64_t map, uint64_t key, uint64_t a, uint64_t b, uint64_t c)
 {
-	CallRequest req;
+	SharedMem *global_data = (SharedMem *)constData;
+	auto &req = global_data->req;
 	const auto &map_info = ::map_info[map >> 32];
 	// printf("helper3 map %ld keysize=%d
 	// valuesize=%d\n",map,map_info.key_size,map_info.value_size);
 	simple_memcpy(&req.map_delete.key, (void *)(uintptr_t)key,
 		      map_info.key_size);
-	CallResponse resp =
-		make_map_call((long)map, (int)MapOperation::DELETE, req);
+	CallResponse resp = make_map_call((long)map, (int)MapOperation::DELETE);
 	return resp.map_delete.result;
 }
 
 extern "C" __global__ void bpf_main(void *mem, size_t sz)
 {
-	// printf("kernel function entered, mem=%lx, memsz=%ld\n",
-	// (uintptr_t)mem,
-	//        sz);
+	printf("kernel function entered, mem=%lx, memsz=%ld\n", (uintptr_t)mem,
+	       sz);
 	char buf[16] = "aaa";
-	//   printf("setup function, const data=%lx\n", constData);
-	auto result = _bpf_helper_ext_0001(1, (uintptr_t)buf, 0, 0, 0);
-	_bpf_helper_ext_0002(1, (uintptr_t)buf, (uintptr_t)buf, 0, 0);
-	_bpf_helper_ext_0003(1, (uintptr_t)buf, 0, 0, 0);
+	printf("setup function, const data=%lx\n", constData);
+	auto result = _bpf_helper_ext_0001(1ull << 32, (uintptr_t)buf, 0, 0, 0);
+	_bpf_helper_ext_0002(1ull << 32, (uintptr_t)buf, (uintptr_t)buf, 0, 0);
+	_bpf_helper_ext_0003(1ull << 32, (uintptr_t)buf, 0, 0, 0);
 	printf("call done\n");
 	printf("got response %d at %d\n", *(int *)result,
 	       threadIdx.x + blockIdx.x * blockDim.x);
