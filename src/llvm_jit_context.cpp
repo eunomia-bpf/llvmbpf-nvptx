@@ -5,7 +5,6 @@
  */
 
 #include <llvm/ExecutionEngine/Orc/JITTargetMachineBuilder.h>
-#include <llvm/ADT/Triple.h>
 #include "./trampoline_ptx.h"
 #ifdef WIN32
 #pragma warning(disable : 4141 4244 4291 4146 4267 4275 4624 4800)
