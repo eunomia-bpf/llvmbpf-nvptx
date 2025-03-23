@@ -152,7 +152,6 @@
 #include <llvm/ExecutionEngine/JITSymbol.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/Transforms/IPO.h>
-#include <llvm/Support/Host.h>
 #include <llvm/MC/TargetRegistry.h>
 #include <memory>
 #include <pthread.h>
