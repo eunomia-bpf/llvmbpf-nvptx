@@ -611,8 +611,10 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 			{ "_bpf_helper_ext_0002", "_bpf_helper_ext_0002_dup" },
 			{ "_bpf_helper_ext_0003", "_bpf_helper_ext_0003_dup" }
 		};
-		const std::string version_header =
-			".version 3.2\n.target sm_60\n.address_size 64\n";
+		const std::string version_headers[] = {
+			".version 3.2\n.target sm_60\n.address_size 64\n",
+			".version 5.0\n.target sm_60\n.address_size 64\n"
+		};
 		const std::string entry_func = ".visible .func bpf_main";
 		std::string result(objStream.begin(), objStream.end());
 
@@ -623,18 +625,24 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 							entry[1]);
 			}
 		}
-		auto idx = result.find(version_header);
-		SPDLOG_INFO("Version header ({}) index: {}", version_header,
-			    idx);
-		if (idx != result.npos) {
-			result = result.replace(idx, version_header.size(), "");
+		for (const auto &header : version_headers) {
+			auto idx = result.find(header);
+			SPDLOG_INFO("Version header ({}) index: {}", header,
+				    idx);
+			if (idx != result.npos) {
+				result = result.replace(idx, header.size(), "");
+			}
 		}
-		idx = result.find(entry_func);
-		SPDLOG_INFO("entry_func ({}) index {}", entry_func, idx);
+		{
+			auto idx = result.find(entry_func);
+			SPDLOG_INFO("entry_func ({}) index {}", entry_func,
+				    idx);
 
-		if (idx != result.npos) {
-			result = result.replace(idx, entry_func.size(),
-						".visible .entry bpf_main");
+			if (idx != result.npos) {
+				result = result.replace(
+					idx, entry_func.size(),
+					".visible .entry bpf_main");
+			}
 		}
 		result = TRAMPOLINE_PTX + result;
 		return result;
