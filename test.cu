@@ -1,6 +1,7 @@
 #include <atomic>
 #include <chrono>
 #include <csignal>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -12,11 +13,8 @@
 #include <thread>
 #include <vector>
 
-/**
- * @brief Compile with clang++-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
- * -L /usr/local/cuda/lib64/ -lcudart
- *
- */
+// clang++-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
+// -L/usr/local/cuda/lib64/ -lcudart
 enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
 
 union CallRequest {
@@ -186,6 +184,28 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0003(
 		      map_info.key_size);
 	CallResponse resp = make_map_call((long)map, (int)MapOperation::DELETE);
 	return resp.map_delete.result;
+}
+
+extern "C" __noinline__ __device__ void _request_probe()
+{
+	make_map_call(0, 1000);
+}
+
+extern "C" __noinline__ __device__ uint32_t vprintf_mocked(uint64_t, uint64_t)
+{
+	_request_probe();
+	return 0;
+}
+
+extern "C" __global__ void probe_demo(int32_t *array, int32_t length,
+				      int64_t *out)
+{
+	int64_t result = 0;
+	for (int i = 0; i < length; i++) {
+		result += array[i];
+		printf("Adding %d\n", array[i]);
+	}
+	*out = result;
 }
 
 extern "C" __global__ void bpf_main(void *mem, size_t sz)

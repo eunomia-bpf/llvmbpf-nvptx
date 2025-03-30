@@ -624,14 +624,19 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 			}
 		}
 		auto idx = result.find(version_header);
-		result = result.replace(idx, version_header.size(), "");
+		SPDLOG_INFO("Version header ({}) index: {}", version_header,
+			    idx);
+		if (idx != result.npos) {
+			result = result.replace(idx, version_header.size(), "");
+		}
 		idx = result.find(entry_func);
-		result = result.replace(idx, entry_func.size(),
-					".visible .entry bpf_main");
+		SPDLOG_INFO("entry_func ({}) index {}", entry_func, idx);
 
+		if (idx != result.npos) {
+			result = result.replace(idx, entry_func.size(),
+						".visible .entry bpf_main");
+		}
 		result = TRAMPOLINE_PTX + result;
-		// result = ".version 8.5\n.target sm_60, debug\n.address_size
-		// 64\n" + 	 result;
 		return result;
 	});
 }
