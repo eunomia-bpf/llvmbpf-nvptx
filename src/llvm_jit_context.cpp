@@ -612,7 +612,7 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 			{ "_bpf_helper_ext_0003", "_bpf_helper_ext_0003_dup" }
 		};
 		const std::string version_header =
-			".version 5.0\n.target sm_60\n.address_size 64\n";
+			".version 3.2\n.target sm_60\n.address_size 64\n";
 		const std::string entry_func = ".visible .func bpf_main";
 		std::string result(objStream.begin(), objStream.end());
 
