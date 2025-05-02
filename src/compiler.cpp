@@ -155,7 +155,8 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 		if (is_imm_jmp(curr)) {
 			SPDLOG_TRACE("mark {} block begin", i + curr.imm + 1);
 			blockBegin[i + curr.imm + 1] = true;
-		} else if (is_jmp(curr)) {
+		} else if (is_jmp(curr) &&
+			   i + curr.offset + 1 < blockBegin.size()) {
 			SPDLOG_TRACE("mark {} block begin",
 				     i + curr.offset + 1);
 			blockBegin[i + curr.offset + 1] = true;
