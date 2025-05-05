@@ -166,7 +166,12 @@ static std::vector<char> compile(const std::string &ptx)
 	return elf_binary;
 }
 
-enum class HelperOperation { MAP_LOOKUP = 1, MAP_UPDATE = 2, MAP_DELETE = 3, MAP_GET_NEXT_KEY = 4 };
+enum class HelperOperation {
+	MAP_LOOKUP = 1,
+	MAP_UPDATE = 2,
+	MAP_DELETE = 3,
+	MAP_GET_NEXT_KEY = 4
+};
 
 union HelperCallRequest {
 	struct {
@@ -239,7 +244,8 @@ static int elfLoadAndKernelLaunch(void *elf, size_t elfSize)
 		CUDA_SAFE_CALL(cuModuleGetGlobal(&constDataPtr, &constDataLen,
 						 module, "constData"));
 		cout << "const data length=" << constDataLen << endl;
-		CUDA_SAFE_CALL(cuMemHostRegister(comm.get(), sizeof(CommSharedMem),
+		CUDA_SAFE_CALL(cuMemHostRegister(comm.get(),
+						 sizeof(CommSharedMem),
 						 CU_MEMHOSTREGISTER_DEVICEMAP));
 		CUdeviceptr memDevPtr;
 		CUDA_SAFE_CALL(
@@ -348,12 +354,24 @@ static std::string load_local_ptx()
 int main()
 {
 	signal(SIGINT, signal_handler);
+	llvm::InitializeAllTargetInfos(); // 初始化 TargetInfo
+	llvm::InitializeAllTargets(); // 初始化 Target (注册 Target 对象)
+	llvm::InitializeAllTargetMCs(); // 初始化 TargetMachine 创建所需内容
+	llvm::InitializeAllAsmPrinters(); // 初始化汇编打印器
+	llvm::InitializeAllAsmParsers(); // 如果需要解析汇编或 .ll 文件
+	for (const auto &target : llvm::TargetRegistry::targets()) {
+		cout << "Registered target: " << target.getName() << endl;
+	}
+	{
+		std::string error;
 
-	llvm::InitializeAllTargets();
-	llvm::InitializeAllTargetMCs();
-	llvm::InitializeAllAsmParsers();
-	llvm::InitializeAllAsmPrinters();
-
+		const llvm::Target *target =
+			llvm::TargetRegistry::lookupTarget("nvptx64", error);
+		if (!target) {
+			throw std::runtime_error(
+				"Failed to find NVPTX target: " + error);
+		}
+	}
 	llvmbpf_vm vm;
 	vm.register_external_function(1, "map_lookup", (void *)test_func);
 	vm.register_external_function(2, "map_update", (void *)test_func);

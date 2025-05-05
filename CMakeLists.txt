@@ -11,11 +11,11 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(NOT DEFINED SPDLOG_ACTIVE_LEVEL)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_definitions(SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
-  else()
-    add_compile_definitions(SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
-  endif()
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_definitions(SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE)
+    else()
+        add_compile_definitions(SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
+    endif()
 endif()
 
 function(bpftime_setup_target target)
@@ -57,17 +57,27 @@ endif()
 option(ENABLE_LLVM_SHARED "Link shared library of LLVM" NO)
 option(BUILD_LLVM_AOT_CLI "Build AOT cli, which rely on libbpf" NO)
 
-if(ENABLE_LLVM_SHARED)
-    set(LLVM_LIBS LLVM)
-else()
-    llvm_map_components_to_libnames(LLVM_LIBS
-        Core
-        OrcJIT
-        mcjit
-        Support
-        nativecodegen
-    )
-endif()
+# if(ENABLE_LLVM_SHARED)
+#     set(LLVM_LIBS LLVM)
+# else()
+#     llvm_map_components_to_libnames(LLVM_LIBS
+#         Core
+#         OrcJIT
+#         mcjit
+#         Support
+#         nativecodegen
+#     )
+# endif()
+
+llvm_map_components_to_libnames(LLVM_LIBS
+    Core
+    OrcJIT
+    mcjit
+    Support
+    nativecodegen
+    NVPTX
+)
+list(APPEND LLVM_LIBS LLVM)
 
 include(FetchContent)
 
@@ -79,7 +89,7 @@ if(NOT DEFINED SPDLOG_INCLUDE)
     FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.14.1 # Specify the version you want to use
+        GIT_TAG v1.15.2 # Specify the version you want to use
     )
 
     # Make the spdlog target available
@@ -97,7 +107,7 @@ else()
 
 
     if(${BPFTIME_ENABLE_UNIT_TESTING})
-        if (NOT TARGET Catch2)
+        if(NOT TARGET Catch2)
             message(STATUS "Adding Catch2 by FetchContent at llvmbpf")
             FetchContent_Declare(
                 Catch2
