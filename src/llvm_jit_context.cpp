@@ -614,7 +614,9 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 		const std::string to_replace_names[][2] = {
 			{ "_bpf_helper_ext_0001", "_bpf_helper_ext_0001_dup" },
 			{ "_bpf_helper_ext_0002", "_bpf_helper_ext_0002_dup" },
-			{ "_bpf_helper_ext_0003", "_bpf_helper_ext_0003_dup" }
+			{ "_bpf_helper_ext_0003", "_bpf_helper_ext_0003_dup" },
+			{ "_bpf_helper_ext_0006", "_bpf_helper_ext_0006_dup" },
+
 		};
 		const std::string version_headers[] = {
 			".version 3.2\n.target sm_60\n.address_size 64\n",
