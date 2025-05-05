@@ -166,9 +166,9 @@ static std::vector<char> compile(const std::string &ptx)
 	return elf_binary;
 }
 
-enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
+enum class HelperOperation { MAP_LOOKUP = 1, MAP_UPDATE = 2, MAP_DELETE = 3, MAP_GET_NEXT_KEY = 4 };
 
-union CallRequest {
+union HelperCallRequest {
 	struct {
 		char key[1 << 30];
 	} map_lookup;
@@ -182,7 +182,7 @@ union CallRequest {
 	} map_delete;
 };
 
-union CallResponse {
+union HelperCallResponse {
 	struct {
 		int result;
 	} map_update, map_delete;
@@ -196,14 +196,14 @@ union CallResponse {
  * - flag2: host   -> device 的信号，“我处理完了”
  * - paramA: 设备端写入的参数，让主机端使用
  */
-struct SharedMem {
+struct CommSharedMem {
 	int flag1;
 	int flag2;
 	int occupy_flag;
 	int request_id;
 	long map_id;
-	CallRequest req;
-	CallResponse resp;
+	HelperCallRequest req;
+	HelperCallResponse resp;
 	uint64_t time_sum[8];
 };
 struct MapBasicInfo {
@@ -230,8 +230,8 @@ static int elfLoadAndKernelLaunch(void *elf, size_t elfSize)
 
 	CUDA_SAFE_CALL(cuCtxCreate(&context, 0, cuDevice));
 	CUDA_SAFE_CALL(cuModuleLoadDataEx(&module, elf, 0, 0, 0));
-	auto comm = std::make_unique<SharedMem>();
-	memset(comm.get(), 0, sizeof(SharedMem));
+	auto comm = std::make_unique<CommSharedMem>();
+	memset(comm.get(), 0, sizeof(CommSharedMem));
 	{
 		CUdeviceptr constDataPtr;
 		size_t constDataLen;
@@ -239,7 +239,7 @@ static int elfLoadAndKernelLaunch(void *elf, size_t elfSize)
 		CUDA_SAFE_CALL(cuModuleGetGlobal(&constDataPtr, &constDataLen,
 						 module, "constData"));
 		cout << "const data length=" << constDataLen << endl;
-		CUDA_SAFE_CALL(cuMemHostRegister(comm.get(), sizeof(SharedMem),
+		CUDA_SAFE_CALL(cuMemHostRegister(comm.get(), sizeof(CommSharedMem),
 						 CU_MEMHOSTREGISTER_DEVICEMAP));
 		CUdeviceptr memDevPtr;
 		CUDA_SAFE_CALL(

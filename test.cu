@@ -15,9 +15,15 @@
 
 // clang++-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
 // -L/usr/local/cuda/lib64/ -lcudart
-enum class MapOperation { LOOKUP = 1, UPDATE = 2, DELETE = 3, NEXT_KEY = 4 };
+enum class HelperOperation {
+	MAP_LOOKUP = 1,
+	MAP_UPDATE = 2,
+	MAP_DELETE = 3,
+	MAP_GET_NEXT_KEY = 4,
+	TRACE_PRINTK = 6
+};
 
-union CallRequest {
+union HelperCallRequest {
 	struct {
 		char key[1 << 30];
 	} map_lookup;
@@ -29,12 +35,18 @@ union CallRequest {
 	struct {
 		char key[1 << 30];
 	} map_delete;
+
+	struct {
+		char fmt[1000];
+		int fmt_size;
+		unsigned long arg1, arg2, arg3;
+	} trace_printk;
 };
 
-union CallResponse {
+union HelperCallResponse {
 	struct {
 		int result;
-	} map_update, map_delete;
+	} map_update, map_delete, trace_printk;
 	struct {
 		const void *value;
 	} map_lookup;
@@ -45,14 +57,14 @@ union CallResponse {
  * - flag2: host   -> device 的信号，“我处理完了”
  * - paramA: 设备端写入的参数，让主机端使用
  */
-struct SharedMem {
+struct CommSharedMem {
 	int flag1;
 	int flag2;
 	int occupy_flag;
 	int request_id;
 	long map_id;
-	CallRequest req;
-	CallResponse resp;
+	HelperCallRequest req;
+	HelperCallResponse resp;
 	uint64_t time_sum[8];
 };
 
@@ -87,9 +99,10 @@ extern "C" __device__ void spin_unlock(int *lock)
 	// printf("lock released by %d\n", threadIdx.x + blockIdx.x *
 	// blockDim.x);
 }
-extern "C" __device__ CallResponse make_map_call(long map_id, int req_id)
+extern "C" __device__ HelperCallResponse make_helper_call(long map_id,
+							  int req_id)
 {
-	SharedMem *g_data = (SharedMem *)constData;
+	CommSharedMem *g_data = (CommSharedMem *)constData;
 	// printf("make_map_call at %d, constdata=%lx\n",
 	//        threadIdx.x + blockIdx.x * blockDim.x, (uintptr_t)g_data);
 	auto start_time = read_globaltimer();
@@ -120,7 +133,7 @@ extern "C" __device__ CallResponse make_map_call(long map_id, int req_id)
 		:
 		: "r"(val), "l"(&g_data->flag1), "l"(&g_data->flag2)
 		: "memory");
-	CallResponse resp = g_data->resp;
+	HelperCallResponse resp = g_data->resp;
 
 	spin_unlock(&g_data->occupy_flag);
 	auto end_time = read_globaltimer();
@@ -140,7 +153,7 @@ extern "C" __device__ inline void simple_memcpy(void *dst, void *src, int sz)
 extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 	uint64_t map, uint64_t key, uint64_t a, uint64_t b, uint64_t c)
 {
-	SharedMem *global_data = (SharedMem *)constData;
+	CommSharedMem *global_data = (CommSharedMem *)constData;
 	auto &req = global_data->req;
 	// CallRequest req;
 	const auto &map_info = ::map_info[map >> 32];
@@ -149,7 +162,8 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 	simple_memcpy(&req.map_lookup.key, (void *)(uintptr_t)key,
 		      map_info.key_size);
 
-	CallResponse resp = make_map_call((long)map, (int)MapOperation::LOOKUP);
+	HelperCallResponse resp =
+		make_helper_call((long)map, (int)HelperOperation::MAP_LOOKUP);
 
 	return (uintptr_t)resp.map_lookup.value;
 }
@@ -157,7 +171,7 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0001(
 extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0002(
 	uint64_t map, uint64_t key, uint64_t value, uint64_t flags, uint64_t a)
 {
-	SharedMem *global_data = (SharedMem *)constData;
+	CommSharedMem *global_data = (CommSharedMem *)constData;
 	auto &req = global_data->req;
 	const auto &map_info = ::map_info[map >> 32];
 	// printf("helper2 map %ld keysize=%d
@@ -168,27 +182,49 @@ extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0002(
 		      map_info.value_size);
 	req.map_update.flags = (uintptr_t)flags;
 
-	CallResponse resp = make_map_call((long)map, (int)MapOperation::UPDATE);
+	HelperCallResponse resp =
+		make_helper_call((long)map, (int)HelperOperation::MAP_UPDATE);
 	return resp.map_update.result;
 }
 
 extern "C" __noinline__ __device__ uint64_t _bpf_helper_ext_0003(
 	uint64_t map, uint64_t key, uint64_t a, uint64_t b, uint64_t c)
 {
-	SharedMem *global_data = (SharedMem *)constData;
+	CommSharedMem *global_data = (CommSharedMem *)constData;
 	auto &req = global_data->req;
 	const auto &map_info = ::map_info[map >> 32];
 	// printf("helper3 map %ld keysize=%d
 	// valuesize=%d\n",map,map_info.key_size,map_info.value_size);
 	simple_memcpy(&req.map_delete.key, (void *)(uintptr_t)key,
 		      map_info.key_size);
-	CallResponse resp = make_map_call((long)map, (int)MapOperation::DELETE);
+	HelperCallResponse resp =
+		make_helper_call((long)map, (int)HelperOperation::MAP_DELETE);
 	return resp.map_delete.result;
+}
+
+extern "C" __noinline__ __device__ uint64_t
+_bpf_helper_ext_0006(uint64_t fmt, uint64_t fmt_size, uint64_t arg1,
+		     uint64_t arg2, uint64_t arg3)
+{
+	CommSharedMem *global_data = (CommSharedMem *)constData;
+	auto &req = global_data->req;
+	char *out = (char *)req.trace_printk.fmt;
+	char *in = (char *)(uintptr_t)fmt;
+	for (auto i = 0; i < fmt_size; i++) {
+		out[i] = in[i];
+	}
+	req.trace_printk.fmt_size = fmt_size;
+	req.trace_printk.arg1 = arg1;
+	req.trace_printk.arg2 = arg2;
+	req.trace_printk.arg3 = arg3;
+	HelperCallResponse resp =
+		make_helper_call(0, (int)HelperOperation::TRACE_PRINTK);
+	return resp.trace_printk.result;
 }
 
 extern "C" __noinline__ __device__ void _request_probe()
 {
-	make_map_call(0, 1000);
+	make_helper_call(0, 1000);
 }
 
 extern "C" __noinline__ __device__ uint32_t vprintf_mocked(uint64_t, uint64_t)
@@ -217,6 +253,9 @@ extern "C" __global__ void bpf_main(void *mem, size_t sz)
 	auto result = _bpf_helper_ext_0001(1ull << 32, (uintptr_t)buf, 0, 0, 0);
 	_bpf_helper_ext_0002(1ull << 32, (uintptr_t)buf, (uintptr_t)buf, 0, 0);
 	_bpf_helper_ext_0003(1ull << 32, (uintptr_t)buf, 0, 0, 0);
+	const char msg[] = "Message from bpf: %d, %lx";
+	_bpf_helper_ext_0006((uint64_t)(uintptr_t)msg, sizeof(msg), 10, 20, 0);
+
 	printf("call done\n");
 	printf("got response %d at %d\n", *(int *)result,
 	       threadIdx.x + blockIdx.x * blockDim.x);
@@ -233,14 +272,14 @@ int main()
 	signal(SIGINT, signal_handler);
 
 	// 1. 先在主机上分配一块普通内存
-	SharedMem *hostMem = (SharedMem *)malloc(sizeof(SharedMem));
+	CommSharedMem *hostMem = (CommSharedMem *)malloc(sizeof(CommSharedMem));
 	if (!hostMem) {
 		std::cerr << "Failed to allocate hostMem\n";
 		return -1;
 	}
 
 	// 2. 注册成 pinned memory (可被GPU直接访问)
-	cudaError_t err = cudaHostRegister(hostMem, sizeof(SharedMem),
+	cudaError_t err = cudaHostRegister(hostMem, sizeof(CommSharedMem),
 					   cudaHostRegisterMapped);
 	if (err != cudaSuccess) {
 		std::cerr
@@ -251,7 +290,7 @@ int main()
 	}
 
 	// 3. 获取对应的设备指针(这样DeviceKernel就能直接访问这个地址)
-	SharedMem *devPtr = nullptr;
+	CommSharedMem *devPtr = nullptr;
 	err = cudaHostGetDevicePointer((void **)&devPtr, (void *)hostMem, 0);
 	if (err != cudaSuccess) {
 		std::cerr << "cudaHostGetDevicePointer error: "
@@ -262,7 +301,7 @@ int main()
 	}
 	printf("dev ptr should be %lx, host ptr is %lx\n", (uintptr_t)devPtr,
 	       (uintptr_t)hostMem);
-	err = cudaMemcpyToSymbol(constData, &devPtr, sizeof(SharedMem *));
+	err = cudaMemcpyToSymbol(constData, &devPtr, sizeof(CommSharedMem *));
 	if (err != cudaSuccess) {
 		std::cerr << "cudaMemcpyToSymbol error: "
 			  << cudaGetErrorString(err) << "\n";

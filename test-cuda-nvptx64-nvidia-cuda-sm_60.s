@@ -19,6 +19,7 @@
 .global .align 1 .b8 _$_str1[45] = {107, 101, 114, 110, 101, 108, 32, 102, 117, 110, 99, 116, 105, 111, 110, 32, 101, 110, 116, 101, 114, 101, 100, 44, 32, 109, 101, 109, 61, 37, 108, 120, 44, 32, 109, 101, 109, 115, 122, 61, 37, 108, 100, 10, 0};
 .global .align 1 .b8 __const_$_bpf_main_$_buf[16] = {97, 97, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 .global .align 1 .b8 _$_str2[32] = {115, 101, 116, 117, 112, 32, 102, 117, 110, 99, 116, 105, 111, 110, 44, 32, 99, 111, 110, 115, 116, 32, 100, 97, 116, 97, 61, 37, 108, 120, 10, 0};
+.global .align 1 .b8 __const_$_bpf_main_$_msg[26] = {77, 101, 115, 115, 97, 103, 101, 32, 102, 114, 111, 109, 32, 98, 112, 102, 58, 32, 37, 100, 44, 32, 37, 108, 120, 0};
 .global .align 1 .b8 _$_str3[11] = {99, 97, 108, 108, 32, 100, 111, 110, 101, 10, 0};
 .global .align 1 .b8 _$_str4[23] = {103, 111, 116, 32, 114, 101, 115, 112, 111, 110, 115, 101, 32, 37, 100, 32, 97, 116, 32, 37, 100, 10, 0};
                                         // @spin_lock
@@ -54,19 +55,19 @@ $L__BB0_1:                              // =>This Inner Loop Header: Depth=1
 	ret;
                                         // -- End function
 }
-	// .globl	make_map_call           // -- Begin function make_map_call
-.visible .func  (.param .align 8 .b8 func_retval0[8]) make_map_call(
-	.param .b64 make_map_call_param_0,
-	.param .b32 make_map_call_param_1
-)                                       // @make_map_call
+	// .globl	make_helper_call        // -- Begin function make_helper_call
+.visible .func  (.param .align 8 .b8 func_retval0[8]) make_helper_call(
+	.param .b64 make_helper_call_param_0,
+	.param .b32 make_helper_call_param_1
+)                                       // @make_helper_call
 {
 	.reg .pred 	%p<3>;
 	.reg .b32 	%r<5>;
 	.reg .b64 	%rd<16>;
 
 // %bb.0:
-	ld.param.u32 	%r1, [make_map_call_param_1];
-	ld.param.u64 	%rd6, [make_map_call_param_0];
+	ld.param.u32 	%r1, [make_helper_call_param_1];
+	ld.param.u64 	%rd6, [make_helper_call_param_0];
 	ld.const.u64 	%rd9, [constData];
 	// begin inline asm
 	mov.u64 %rd7, %globaltimer;
@@ -494,6 +495,86 @@ $L__BB5_8:                              // =>This Inner Loop Header: Depth=1
 	ret;
                                         // -- End function
 }
+	// .globl	_bpf_helper_ext_0006    // -- Begin function _bpf_helper_ext_0006
+.visible .func  (.param .b64 func_retval0) _bpf_helper_ext_0006(
+	.param .b64 _bpf_helper_ext_0006_param_0,
+	.param .b64 _bpf_helper_ext_0006_param_1,
+	.param .b64 _bpf_helper_ext_0006_param_2,
+	.param .b64 _bpf_helper_ext_0006_param_3,
+	.param .b64 _bpf_helper_ext_0006_param_4
+)                                       // @_bpf_helper_ext_0006
+{
+	.reg .pred 	%p<4>;
+	.reg .b16 	%rs<2>;
+	.reg .b32 	%r<5>;
+	.reg .b64 	%rd<28>;
+
+// %bb.0:
+	ld.param.u64 	%rd10, [_bpf_helper_ext_0006_param_4];
+	ld.param.u64 	%rd9, [_bpf_helper_ext_0006_param_3];
+	ld.param.u64 	%rd8, [_bpf_helper_ext_0006_param_2];
+	ld.param.u64 	%rd7, [_bpf_helper_ext_0006_param_1];
+	ld.const.u64 	%rd1, [constData];
+	setp.eq.s64 	%p1, %rd7, 0;
+	@%p1 bra 	$L__BB6_3;
+// %bb.1:
+	ld.param.u64 	%rd6, [_bpf_helper_ext_0006_param_0];
+	add.s64 	%rd2, %rd1, 24;
+	mov.u64 	%rd27, 0;
+$L__BB6_2:                              // =>This Inner Loop Header: Depth=1
+	add.s64 	%rd12, %rd6, %rd27;
+	ld.u8 	%rs1, [%rd12];
+	add.s64 	%rd13, %rd2, %rd27;
+	st.u8 	[%rd13], %rs1;
+	add.s64 	%rd14, %rd27, 1;
+	and.b64  	%rd27, %rd14, 4294967295;
+	setp.lt.u64 	%p2, %rd27, %rd7;
+	@%p2 bra 	$L__BB6_2;
+$L__BB6_3:
+	st.u32 	[%rd1+1024], %rd7;
+	st.u64 	[%rd1+1032], %rd8;
+	st.u64 	[%rd1+1040], %rd9;
+	st.u64 	[%rd1+1048], %rd10;
+	// begin inline asm
+	mov.u64 %rd15, %globaltimer;
+	// end inline asm
+	add.s64 	%rd16, %rd1, 8;
+$L__BB6_4:                              // =>This Inner Loop Header: Depth=1
+	atom.cas.b32 	%r1, [%rd16], 0, 1;
+	setp.eq.s32 	%p3, %r1, 1;
+	@%p3 bra 	$L__BB6_4;
+// %bb.5:
+	mov.u32 	%r3, 6;
+	st.u32 	[%rd1+12], %r3;
+	mov.u64 	%rd20, 0;
+	st.u64 	[%rd1+16], %rd20;
+	add.s64 	%rd18, %rd1, 4;
+	mov.u32 	%r2, 42;
+	// begin inline asm
+	.reg .pred p0;                   
+	membar.sys;                      
+	st.global.u32 [%rd1], 1;           
+	spin_wait:                       
+	membar.sys;                      
+	ld.global.u32 %r2, [%rd18];          
+	setp.eq.u32 p0, %r2, 0;           
+	@p0 bra spin_wait;               
+	st.global.u32 [%rd18], 0;           
+	membar.sys;                      
+	
+	// end inline asm
+	ld.s32 	%rd21, [%rd1+2147483680];
+	atom.exch.b32 	%r4, [%rd16], 0;
+	// begin inline asm
+	mov.u64 %rd19, %globaltimer;
+	// end inline asm
+	sub.s64 	%rd23, %rd19, %rd15;
+	add.s64 	%rd24, %rd1, 2147483736;
+	atom.add.u64 	%rd25, [%rd24], %rd23;
+	st.param.b64 	[func_retval0+0], %rd21;
+	ret;
+                                        // -- End function
+}
 	// .globl	_request_probe          // -- Begin function _request_probe
 .visible .func _request_probe()         // @_request_probe
 {
@@ -507,10 +588,10 @@ $L__BB5_8:                              // =>This Inner Loop Header: Depth=1
 	mov.u64 %rd2, %globaltimer;
 	// end inline asm
 	add.s64 	%rd3, %rd4, 8;
-$L__BB6_1:                              // =>This Inner Loop Header: Depth=1
+$L__BB7_1:                              // =>This Inner Loop Header: Depth=1
 	atom.cas.b32 	%r1, [%rd3], 0, 1;
 	setp.eq.s32 	%p1, %r1, 1;
-	@%p1 bra 	$L__BB6_1;
+	@%p1 bra 	$L__BB7_1;
 // %bb.2:
 	mov.u32 	%r3, 1000;
 	st.u32 	[%rd4+12], %r3;
@@ -566,7 +647,7 @@ $L__BB6_1:                              // =>This Inner Loop Header: Depth=1
 	.param .u64 probe_demo_param_2
 )                                       // @probe_demo
 {
-	.local .align 8 .b8 	__local_depot8[8];
+	.local .align 8 .b8 	__local_depot9[8];
 	.reg .b64 	%SP;
 	.reg .b64 	%SPL;
 	.reg .pred 	%p<5>;
@@ -574,14 +655,14 @@ $L__BB6_1:                              // =>This Inner Loop Header: Depth=1
 	.reg .b64 	%rd<45>;
 
 // %bb.0:
-	mov.u64 	%SPL, __local_depot8;
+	mov.u64 	%SPL, __local_depot9;
 	cvta.local.u64 	%SP, %SPL;
 	ld.param.u32 	%r2, [probe_demo_param_1];
 	ld.param.u64 	%rd19, [probe_demo_param_2];
 	cvta.to.global.u64 	%rd1, %rd19;
 	setp.lt.s32 	%p1, %r2, 1;
 	mov.u64 	%rd44, 0;
-	@%p1 bra 	$L__BB8_6;
+	@%p1 bra 	$L__BB9_6;
 // %bb.1:
 	ld.param.u64 	%rd18, [probe_demo_param_0];
 	cvta.to.global.u64 	%rd2, %rd18;
@@ -592,7 +673,7 @@ $L__BB6_1:                              // =>This Inner Loop Header: Depth=1
 	mov.u64 	%rd43, 0;
 	mov.u64 	%rd37, _$_str;
 	mov.u64 	%rd44, %rd43;
-	@%p2 bra 	$L__BB8_4;
+	@%p2 bra 	$L__BB9_4;
 // %bb.2:
 	add.s64 	%rd42, %rd2, 4;
 	cvt.u64.u32 	%rd24, %r2;
@@ -601,7 +682,7 @@ $L__BB6_1:                              // =>This Inner Loop Header: Depth=1
 	cvta.global.u64 	%rd28, %rd37;
 	cvt.u32.u64 	%r10, %rd5;
 	mov.u64 	%rd44, %rd43;
-$L__BB8_3:                              // =>This Inner Loop Header: Depth=1
+$L__BB9_3:                              // =>This Inner Loop Header: Depth=1
 	ld.global.u32 	%r3, [%rd42+-4];
 	cvt.s64.s32 	%rd25, %r3;
 	add.s64 	%rd26, %rd44, %rd25;
@@ -644,11 +725,11 @@ $L__BB8_3:                              // =>This Inner Loop Header: Depth=1
 	add.s64 	%rd42, %rd42, 8;
 	cvt.u32.u64 	%r9, %rd43;
 	setp.eq.s32 	%p3, %r10, %r9;
-	@%p3 bra 	$L__BB8_4;
-	bra.uni 	$L__BB8_3;
-$L__BB8_4:
+	@%p3 bra 	$L__BB9_4;
+	bra.uni 	$L__BB9_3;
+$L__BB9_4:
 	setp.eq.s32 	%p4, %r1, 0;
-	@%p4 bra 	$L__BB8_6;
+	@%p4 bra 	$L__BB9_6;
 // %bb.5:
 	shl.b64 	%rd31, %rd43, 2;
 	add.s64 	%rd32, %rd2, %rd31;
@@ -672,7 +753,7 @@ $L__BB8_4:
 	);
 	ld.param.b32 	%r12, [retval0+0];
 	} // callseq 3
-$L__BB8_6:
+$L__BB9_6:
 	st.global.u64 	[%rd1], %rd44;
 	ret;
                                         // -- End function
@@ -683,15 +764,15 @@ $L__BB8_6:
 	.param .u64 bpf_main_param_1
 )                                       // @bpf_main
 {
-	.local .align 8 .b8 	__local_depot9[48];
+	.local .align 8 .b8 	__local_depot10[80];
 	.reg .b64 	%SP;
 	.reg .b64 	%SPL;
-	.reg .b16 	%rs<17>;
+	.reg .b16 	%rs<47>;
 	.reg .b32 	%r<15>;
-	.reg .b64 	%rd<95>;
+	.reg .b64 	%rd<193>;
 
 // %bb.0:
-	mov.u64 	%SPL, __local_depot9;
+	mov.u64 	%SPL, __local_depot10;
 	cvta.local.u64 	%SP, %SPL;
 	ld.param.u64 	%rd1, [bpf_main_param_0];
 	cvta.to.global.u64 	%rd2, %rd1;
@@ -700,8 +781,8 @@ $L__BB8_6:
 	add.u64 	%rd5, %SPL, 0;
 	add.u64 	%rd6, %SP, 32;
 	add.u64 	%rd7, %SPL, 32;
-	add.u64 	%rd8, %SP, 40;
-	add.u64 	%rd9, %SPL, 40;
+	add.u64 	%rd8, %SP, 72;
+	add.u64 	%rd9, %SPL, 72;
 	st.local.u64 	[%rd5], %rd1;
 	st.local.u64 	[%rd5+8], %rd3;
 	mov.u64 	%rd10, _$_str1;
@@ -893,12 +974,166 @@ $L__BB8_6:
 	);
 	ld.param.b64 	%rd89, [retval0+0];
 	} // callseq 8
-	mov.u64 	%rd91, _$_str3;
-	cvta.global.u64 	%rd92, %rd91;
+	mov.u64 	%rd91, __const_$_bpf_main_$_msg;
+	add.s64 	%rd92, %rd91, 24;
+	ld.global.nc.u8 	%rs17, [%rd92];
+	cvt.u16.u8 	%rs18, %rs17;
+	add.s64 	%rd93, %rd91, 25;
+	ld.global.nc.u8 	%rs19, [%rd93];
+	cvt.u16.u8 	%rs20, %rs19;
+	shl.b16 	%rs21, %rs20, 8;
+	or.b16  	%rs22, %rs21, %rs18;
+	st.u16 	[%SP+64], %rs22;
+	add.s64 	%rd94, %rd91, 16;
+	ld.global.nc.u8 	%rs23, [%rd94];
+	cvt.u64.u8 	%rd95, %rs23;
+	add.s64 	%rd96, %rd91, 17;
+	ld.global.nc.u8 	%rs24, [%rd96];
+	cvt.u64.u8 	%rd97, %rs24;
+	shl.b64 	%rd98, %rd97, 8;
+	or.b64  	%rd99, %rd98, %rd95;
+	add.s64 	%rd100, %rd91, 18;
+	ld.global.nc.u8 	%rs25, [%rd100];
+	cvt.u64.u8 	%rd101, %rs25;
+	shl.b64 	%rd102, %rd101, 16;
+	add.s64 	%rd103, %rd91, 19;
+	ld.global.nc.u8 	%rs26, [%rd103];
+	cvt.u64.u8 	%rd104, %rs26;
+	shl.b64 	%rd105, %rd104, 24;
+	or.b64  	%rd106, %rd105, %rd102;
+	or.b64  	%rd107, %rd106, %rd99;
+	add.s64 	%rd108, %rd91, 20;
+	ld.global.nc.u8 	%rs27, [%rd108];
+	cvt.u64.u8 	%rd109, %rs27;
+	add.s64 	%rd110, %rd91, 21;
+	ld.global.nc.u8 	%rs28, [%rd110];
+	cvt.u64.u8 	%rd111, %rs28;
+	shl.b64 	%rd112, %rd111, 8;
+	or.b64  	%rd113, %rd112, %rd109;
+	add.s64 	%rd114, %rd91, 22;
+	ld.global.nc.u8 	%rs29, [%rd114];
+	cvt.u64.u8 	%rd115, %rs29;
+	shl.b64 	%rd116, %rd115, 16;
+	add.s64 	%rd117, %rd91, 23;
+	ld.global.nc.u8 	%rs30, [%rd117];
+	cvt.u64.u8 	%rd118, %rs30;
+	shl.b64 	%rd119, %rd118, 24;
+	or.b64  	%rd120, %rd119, %rd116;
+	or.b64  	%rd121, %rd120, %rd113;
+	shl.b64 	%rd122, %rd121, 32;
+	or.b64  	%rd123, %rd122, %rd107;
+	st.u64 	[%SP+56], %rd123;
+	add.s64 	%rd124, %rd91, 8;
+	ld.global.nc.u8 	%rs31, [%rd124];
+	cvt.u64.u8 	%rd125, %rs31;
+	add.s64 	%rd126, %rd91, 9;
+	ld.global.nc.u8 	%rs32, [%rd126];
+	cvt.u64.u8 	%rd127, %rs32;
+	shl.b64 	%rd128, %rd127, 8;
+	or.b64  	%rd129, %rd128, %rd125;
+	add.s64 	%rd130, %rd91, 10;
+	ld.global.nc.u8 	%rs33, [%rd130];
+	cvt.u64.u8 	%rd131, %rs33;
+	shl.b64 	%rd132, %rd131, 16;
+	add.s64 	%rd133, %rd91, 11;
+	ld.global.nc.u8 	%rs34, [%rd133];
+	cvt.u64.u8 	%rd134, %rs34;
+	shl.b64 	%rd135, %rd134, 24;
+	or.b64  	%rd136, %rd135, %rd132;
+	or.b64  	%rd137, %rd136, %rd129;
+	add.s64 	%rd138, %rd91, 12;
+	ld.global.nc.u8 	%rs35, [%rd138];
+	cvt.u64.u8 	%rd139, %rs35;
+	add.s64 	%rd140, %rd91, 13;
+	ld.global.nc.u8 	%rs36, [%rd140];
+	cvt.u64.u8 	%rd141, %rs36;
+	shl.b64 	%rd142, %rd141, 8;
+	or.b64  	%rd143, %rd142, %rd139;
+	add.s64 	%rd144, %rd91, 14;
+	ld.global.nc.u8 	%rs37, [%rd144];
+	cvt.u64.u8 	%rd145, %rs37;
+	shl.b64 	%rd146, %rd145, 16;
+	add.s64 	%rd147, %rd91, 15;
+	ld.global.nc.u8 	%rs38, [%rd147];
+	cvt.u64.u8 	%rd148, %rs38;
+	shl.b64 	%rd149, %rd148, 24;
+	or.b64  	%rd150, %rd149, %rd146;
+	or.b64  	%rd151, %rd150, %rd143;
+	shl.b64 	%rd152, %rd151, 32;
+	or.b64  	%rd153, %rd152, %rd137;
+	st.u64 	[%SP+48], %rd153;
+	ld.global.nc.u8 	%rs39, [__const_$_bpf_main_$_msg];
+	cvt.u64.u8 	%rd154, %rs39;
+	add.s64 	%rd155, %rd91, 1;
+	ld.global.nc.u8 	%rs40, [%rd155];
+	cvt.u64.u8 	%rd156, %rs40;
+	shl.b64 	%rd157, %rd156, 8;
+	or.b64  	%rd158, %rd157, %rd154;
+	add.s64 	%rd159, %rd91, 2;
+	ld.global.nc.u8 	%rs41, [%rd159];
+	cvt.u64.u8 	%rd160, %rs41;
+	shl.b64 	%rd161, %rd160, 16;
+	add.s64 	%rd162, %rd91, 3;
+	ld.global.nc.u8 	%rs42, [%rd162];
+	cvt.u64.u8 	%rd163, %rs42;
+	shl.b64 	%rd164, %rd163, 24;
+	or.b64  	%rd165, %rd164, %rd161;
+	or.b64  	%rd166, %rd165, %rd158;
+	add.s64 	%rd167, %rd91, 4;
+	ld.global.nc.u8 	%rs43, [%rd167];
+	cvt.u64.u8 	%rd168, %rs43;
+	add.s64 	%rd169, %rd91, 5;
+	ld.global.nc.u8 	%rs44, [%rd169];
+	cvt.u64.u8 	%rd170, %rs44;
+	shl.b64 	%rd171, %rd170, 8;
+	or.b64  	%rd172, %rd171, %rd168;
+	add.s64 	%rd173, %rd91, 6;
+	ld.global.nc.u8 	%rs45, [%rd173];
+	cvt.u64.u8 	%rd174, %rs45;
+	shl.b64 	%rd175, %rd174, 16;
+	add.s64 	%rd176, %rd91, 7;
+	ld.global.nc.u8 	%rs46, [%rd176];
+	cvt.u64.u8 	%rd177, %rs46;
+	shl.b64 	%rd178, %rd177, 24;
+	or.b64  	%rd179, %rd178, %rd175;
+	or.b64  	%rd180, %rd179, %rd172;
+	shl.b64 	%rd181, %rd180, 32;
+	or.b64  	%rd182, %rd181, %rd166;
+	st.u64 	[%SP+40], %rd182;
+	add.u64 	%rd183, %SP, 40;
+	mov.u64 	%rd184, 26;
+	mov.u64 	%rd185, 10;
+	mov.u64 	%rd186, 20;
 	{ // callseq 9, 0
 	.reg .b32 temp_param_reg;
 	.param .b64 param0;
-	st.param.b64 	[param0+0], %rd92;
+	st.param.b64 	[param0+0], %rd183;
+	.param .b64 param1;
+	st.param.b64 	[param1+0], %rd184;
+	.param .b64 param2;
+	st.param.b64 	[param2+0], %rd185;
+	.param .b64 param3;
+	st.param.b64 	[param3+0], %rd186;
+	.param .b64 param4;
+	st.param.b64 	[param4+0], %rd82;
+	.param .b64 retval0;
+	call.uni (retval0), 
+	_bpf_helper_ext_0006, 
+	(
+	param0, 
+	param1, 
+	param2, 
+	param3, 
+	param4
+	);
+	ld.param.b64 	%rd187, [retval0+0];
+	} // callseq 9
+	mov.u64 	%rd189, _$_str3;
+	cvta.global.u64 	%rd190, %rd189;
+	{ // callseq 10, 0
+	.reg .b32 temp_param_reg;
+	.param .b64 param0;
+	st.param.b64 	[param0+0], %rd190;
 	.param .b64 param1;
 	st.param.b64 	[param1+0], %rd82;
 	.param .b32 retval0;
@@ -909,19 +1144,19 @@ $L__BB8_6:
 	param1
 	);
 	ld.param.b32 	%r5, [retval0+0];
-	} // callseq 9
+	} // callseq 10
 	ld.u32 	%r7, [%rd80];
 	mov.u32 	%r8, %tid.x;
 	mov.u32 	%r9, %ctaid.x;
 	mov.u32 	%r10, %ntid.x;
 	mad.lo.s32 	%r11, %r9, %r10, %r8;
 	st.local.v2.u32 	[%rd9], {%r7, %r11};
-	mov.u64 	%rd93, _$_str4;
-	cvta.global.u64 	%rd94, %rd93;
-	{ // callseq 10, 0
+	mov.u64 	%rd191, _$_str4;
+	cvta.global.u64 	%rd192, %rd191;
+	{ // callseq 11, 0
 	.reg .b32 temp_param_reg;
 	.param .b64 param0;
-	st.param.b64 	[param0+0], %rd94;
+	st.param.b64 	[param0+0], %rd192;
 	.param .b64 param1;
 	st.param.b64 	[param1+0], %rd8;
 	.param .b32 retval0;
@@ -932,7 +1167,7 @@ $L__BB8_6:
 	param1
 	);
 	ld.param.b32 	%r12, [retval0+0];
-	} // callseq 10
+	} // callseq 11
 	mov.u32 	%r14, 123;
 	st.global.u32 	[%rd2], %r14;
 	ret;
