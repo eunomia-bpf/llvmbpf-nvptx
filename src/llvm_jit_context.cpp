@@ -594,7 +594,12 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 		optimizeModule(M);
 
 		llvm::legacy::PassManager passManager;
+#if LLVM_VERSION_MAJOR > 15
+		CodeGenFileType fileType = CodeGenFileType::AssemblyFile;
+#else
 		CodeGenFileType fileType = llvm::CGFT_AssemblyFile;
+
+#endif
 		SmallVector<char, 0> objStream;
 		std::unique_ptr<raw_svector_ostream> BOS =
 			std::make_unique<raw_svector_ostream>(objStream);
