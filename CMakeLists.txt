@@ -123,9 +123,9 @@ endif()
 
 message(STATUS "LLVM_LIBS=${LLVM_LIBS}")
 
-target_link_libraries(llvmbpf_vm PUBLIC ${LLVM_LIBS} PRIVATE spdlog::spdlog)
+target_link_libraries(llvmbpf_vm PRIVATE ${LLVM_LIBS} PRIVATE spdlog::spdlog)
 target_include_directories(llvmbpf_vm
-    PUBLIC ${LLVM_INCLUDE_DIRS} ${SPDLOG_INCLUDE} ${Boost_INCLUDE} ../include include # LLVM jit also used these headers
+    PRIVATE ${LLVM_INCLUDE_DIRS} ${SPDLOG_INCLUDE} ${Boost_INCLUDE} ../include include # LLVM jit also used these headers
 )
 add_dependencies(llvmbpf_vm spdlog::spdlog)
 
@@ -144,6 +144,6 @@ add_subdirectory(example)
 
 add_executable(ptx_test ptx_test.cpp)
 target_link_directories(ptx_test PRIVATE /usr/local/cuda-12.6/lib64 /usr/local/cuda-12.6/lib64/stubs)
-target_link_libraries(ptx_test PRIVATE llvmbpf_vm cuda cudart libnvptxcompiler_static.a)
+target_link_libraries(ptx_test PRIVATE ${LLVM_LIBS} llvmbpf_vm cuda cudart libnvptxcompiler_static.a)
 add_dependencies(ptx_test llvmbpf_vm spdlog::spdlog)
-target_include_directories(ptx_test PRIVATE include src /usr/local/cuda-12.6/include)
+target_include_directories(ptx_test PRIVATE ${LLVM_INCLUDE_DIRS} include src /usr/local/cuda-12.6/include)
