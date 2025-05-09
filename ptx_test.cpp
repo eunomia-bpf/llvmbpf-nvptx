@@ -170,7 +170,8 @@ enum class HelperOperation {
 	MAP_LOOKUP = 1,
 	MAP_UPDATE = 2,
 	MAP_DELETE = 3,
-	MAP_GET_NEXT_KEY = 4
+	MAP_GET_NEXT_KEY = 4,
+	TRACE_PRINTK = 6
 };
 
 union HelperCallRequest {
@@ -185,12 +186,17 @@ union HelperCallRequest {
 	struct {
 		char key[1 << 30];
 	} map_delete;
+	struct {
+		char fmt[1000];
+		int fmt_size;
+		unsigned long arg1, arg2, arg3;
+	} trace_printk;
 };
 
 union HelperCallResponse {
 	struct {
 		int result;
-	} map_update, map_delete;
+	} map_update, map_delete, trace_printk;
 	struct {
 		const void *value;
 	} map_lookup;

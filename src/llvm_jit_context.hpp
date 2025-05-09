@@ -64,6 +64,9 @@ class llvm_bpf_jit_context {
 	generate_ptx(const char *target_cpu = "sm_60");
 };
 
+std::string get_trampoline_ptx();
+std::string wrap_ptx_with_trampoline(std::string ptx_to_wrap);
+std::string patch_main_from_func_to_entry(std::string);
 } // namespace bpftime
 
 #endif
