@@ -796,7 +796,7 @@ this conversion.
 							vm.map_by_fd(inst.imm)),
 						regs[inst.dst]);
 				} else {
-					SPDLOG_INFO(
+					SPDLOG_DEBUG(
 						"map_by_fd is called in eBPF code, but is not provided, will use the default behavior");
 					// Default: input value
 					builder.CreateStore(
@@ -813,7 +813,7 @@ this conversion.
 				if (vm.map_by_fd) {
 					mapPtr = vm.map_by_fd(inst.imm);
 				} else {
-					SPDLOG_INFO(
+					SPDLOG_DEBUG(
 						"map_by_fd is called in eBPF code, but is not provided, will use the default behavior");
 					// Default: returns the input value
 					mapPtr = (uint64_t)inst.imm;
