@@ -386,7 +386,12 @@ int main()
 	vm.load_code((void *)test_prog, sizeof(test_prog));
 	llvm_bpf_jit_context ctx(vm);
 	auto result = *ctx.generate_ptx("sm_60");
-
+	{
+		std::ofstream ofs_result("out.ptx");
+		ofs_result << result;
+	}
+	result = wrap_ptx_with_trampoline(patch_helper_names_and_header(
+		patch_main_from_func_to_entry(result)));
 	// auto result = load_local_ptx();
 	cout << result << std::endl;
 	auto bin = compile(result);

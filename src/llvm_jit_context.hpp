@@ -65,8 +65,9 @@ class llvm_bpf_jit_context {
 };
 
 std::string get_trampoline_ptx();
-std::string wrap_ptx_with_trampoline(std::string ptx_to_wrap);
+std::string patch_helper_names_and_header(std::string ptx_to_wrap);
 std::string patch_main_from_func_to_entry(std::string);
+std::string wrap_ptx_with_trampoline(std::string input);
 } // namespace bpftime
 
 #endif

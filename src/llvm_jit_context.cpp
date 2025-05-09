@@ -613,8 +613,7 @@ llvm_bpf_jit_context::generate_ptx(const char *target_cpu)
 		passManager.run(M);
 		std::string result(objStream.begin(), objStream.end());
 
-		return wrap_ptx_with_trampoline(
-			patch_main_from_func_to_entry(result));
+		return result;
 	});
 }
 
@@ -624,8 +623,11 @@ std::string get_trampoline_ptx()
 {
 	return TRAMPOLINE_PTX;
 }
-
-std::string wrap_ptx_with_trampoline(std::string result)
+std::string wrap_ptx_with_trampoline(std::string input)
+{
+	return get_trampoline_ptx() + input;
+}
+std::string patch_helper_names_and_header(std::string result)
 {
 	const std::string to_replace_names[][2] = {
 		{ "_bpf_helper_ext_0001", "_bpf_helper_ext_0001_dup" },
@@ -651,7 +653,6 @@ std::string wrap_ptx_with_trampoline(std::string result)
 			result = result.replace(idx, header.size(), "");
 		}
 	}
-	result = get_trampoline_ptx() + result;
 	return result;
 }
 std::string patch_main_from_func_to_entry(std::string result)
