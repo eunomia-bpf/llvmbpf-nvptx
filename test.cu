@@ -209,7 +209,7 @@ extern "C" __noinline__ __device__ uint64_t
 _bpf_helper_ext_0006(uint64_t fmt, uint64_t fmt_size, uint64_t arg1,
 		     uint64_t arg2, uint64_t arg3)
 {
-	printf("Calling 0006 fmt %s\n",(char*)fmt);
+	// printf("Calling 0006 fmt %s\n",(char*)fmt);
 	CommSharedMem *global_data = (CommSharedMem *)constData;
 	auto &req = global_data->req;
 	char *out = (char *)req.trace_printk.fmt;
