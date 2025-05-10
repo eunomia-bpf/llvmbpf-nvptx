@@ -13,14 +13,14 @@
 #include <thread>
 #include <vector>
 
-// clang++-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2
-// -L/usr/local/cuda/lib64/ -lcudart
+// clang++-17 -S ./test.cu -Wall --cuda-gpu-arch=sm_60 -O2 -L/usr/local/cuda/lib64/ -lcudart
 enum class HelperOperation {
 	MAP_LOOKUP = 1,
 	MAP_UPDATE = 2,
 	MAP_DELETE = 3,
 	MAP_GET_NEXT_KEY = 4,
-	TRACE_PRINTK = 6
+	TRACE_PRINTK = 6,
+	PUTS = 501
 };
 
 union HelperCallRequest {
@@ -41,12 +41,15 @@ union HelperCallRequest {
 		int fmt_size;
 		unsigned long arg1, arg2, arg3;
 	} trace_printk;
+	struct {
+		char data[10000];
+	} puts;
 };
 
 union HelperCallResponse {
 	struct {
 		int result;
-	} map_update, map_delete, trace_printk;
+	} map_update, map_delete, trace_printk, puts;
 	struct {
 		const void *value;
 	} map_lookup;
@@ -222,27 +225,47 @@ _bpf_helper_ext_0006(uint64_t fmt, uint64_t fmt_size, uint64_t arg1,
 	return resp.trace_printk.result;
 }
 
-extern "C" __noinline__ __device__ void _request_probe()
+extern "C" __noinline__ __device__ uint64_t
+_bpf_helper_ext_0501(uint64_t data, uint64_t, uint64_t, uint64_t, uint64_t)
 {
-	make_helper_call(0, 1000);
-}
+	CommSharedMem *global_data = (CommSharedMem *)constData;
+	auto &req = global_data->req.puts;
 
-extern "C" __noinline__ __device__ uint32_t vprintf_mocked(uint64_t, uint64_t)
-{
-	_request_probe();
-	return 0;
-}
-
-extern "C" __global__ void probe_demo(int32_t *array, int32_t length,
-				      int64_t *out)
-{
-	int64_t result = 0;
-	for (int i = 0; i < length; i++) {
-		result += array[i];
-		printf("Adding %d\n", array[i]);
+	const char *input = (const char *)data;
+	int idx = 0;
+	while (*input) {
+		req.data[idx] = input[idx];
+		idx++;
+		input++;
 	}
-	*out = result;
+	req.data[idx] = 0;
+	HelperCallResponse resp =
+		make_helper_call(0, (int)HelperOperation::PUTS);
+	return resp.puts.result;
 }
+
+// extern "C" __noinline__ __device__ void _request_probe()
+// {
+// 	make_helper_call(0, 1000);
+// }
+
+// extern "C" __noinline__ __device__ uint32_t vprintf_mocked(uint64_t,
+// uint64_t)
+// {
+// 	_request_probe();
+// 	return 0;
+// }
+
+// extern "C" __global__ void probe_demo(int32_t *array, int32_t length,
+// 				      int64_t *out)
+// {
+// 	int64_t result = 0;
+// 	for (int i = 0; i < length; i++) {
+// 		result += array[i];
+// 		printf("Adding %d\n", array[i]);
+// 	}
+// 	*out = result;
+// }
 
 extern "C" __global__ void bpf_main(void *mem, size_t sz)
 {

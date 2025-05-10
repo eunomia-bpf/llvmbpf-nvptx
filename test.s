@@ -1,45 +1,5 @@
 	.text
 	.file	"test.cu"
-	.globl	__device_stub__probe_demo       # -- Begin function __device_stub__probe_demo
-	.p2align	4, 0x90
-	.type	__device_stub__probe_demo,@function
-__device_stub__probe_demo:              # @__device_stub__probe_demo
-	.cfi_startproc
-# %bb.0:
-	subq	$104, %rsp
-	.cfi_def_cfa_offset 112
-	movq	%rdi, 72(%rsp)
-	movl	%esi, 12(%rsp)
-	movq	%rdx, 64(%rsp)
-	leaq	72(%rsp), %rax
-	movq	%rax, 80(%rsp)
-	leaq	12(%rsp), %rax
-	movq	%rax, 88(%rsp)
-	leaq	64(%rsp), %rax
-	movq	%rax, 96(%rsp)
-	leaq	48(%rsp), %rdi
-	leaq	32(%rsp), %rsi
-	leaq	24(%rsp), %rdx
-	leaq	16(%rsp), %rcx
-	callq	__cudaPopCallConfiguration@PLT
-	movq	48(%rsp), %rsi
-	movl	56(%rsp), %edx
-	movq	32(%rsp), %rcx
-	movl	40(%rsp), %r8d
-	leaq	__device_stub__probe_demo(%rip), %rdi
-	leaq	80(%rsp), %r9
-	pushq	16(%rsp)
-	.cfi_adjust_cfa_offset 8
-	pushq	32(%rsp)
-	.cfi_adjust_cfa_offset 8
-	callq	cudaLaunchKernel@PLT
-	addq	$120, %rsp
-	.cfi_adjust_cfa_offset -120
-	retq
-.Lfunc_end0:
-	.size	__device_stub__probe_demo, .Lfunc_end0-__device_stub__probe_demo
-	.cfi_endproc
-                                        # -- End function
 	.globl	__device_stub__bpf_main         # -- Begin function __device_stub__bpf_main
 	.p2align	4, 0x90
 	.type	__device_stub__bpf_main,@function
@@ -73,8 +33,8 @@ __device_stub__bpf_main:                # @__device_stub__bpf_main
 	addq	$104, %rsp
 	.cfi_adjust_cfa_offset -104
 	retq
-.Lfunc_end1:
-	.size	__device_stub__bpf_main, .Lfunc_end1-__device_stub__bpf_main
+.Lfunc_end0:
+	.size	__device_stub__bpf_main, .Lfunc_end0-__device_stub__bpf_main
 	.cfi_endproc
                                         # -- End function
 	.globl	_Z14signal_handleri             # -- Begin function _Z14signal_handleri
@@ -86,8 +46,8 @@ _Z14signal_handleri:                    # @_Z14signal_handleri
 	movb	$1, %al
 	xchgb	%al, _ZL11should_exit.0(%rip)
 	retq
-.Lfunc_end2:
-	.size	_Z14signal_handleri, .Lfunc_end2-_Z14signal_handleri
+.Lfunc_end1:
+	.size	_Z14signal_handleri, .Lfunc_end1-_Z14signal_handleri
 	.cfi_endproc
                                         # -- End function
 	.globl	main                            # -- Begin function main
@@ -120,7 +80,7 @@ main:                                   # @main
 	callq	malloc@PLT
 	movq	%rax, 8(%rsp)
 	testq	%rax, %rax
-	je	.LBB3_1
+	je	.LBB2_1
 # %bb.2:
 	movq	%rax, %rbx
 	movl	$2147483752, %esi               # imm = 0x80000068
@@ -128,7 +88,7 @@ main:                                   # @main
 	movl	$2, %edx
 	callq	cudaHostRegister@PLT
 	testl	%eax, %eax
-	je	.LBB3_10
+	je	.LBB2_10
 # %bb.3:
 	movl	%eax, %ebp
 	movq	_ZSt4cerr@GOTPCREL(%rip), %r14
@@ -139,7 +99,7 @@ main:                                   # @main
 	movl	%ebp, %edi
 	callq	cudaGetErrorString@PLT
 	testq	%rax, %rax
-	je	.LBB3_4
+	je	.LBB2_4
 # %bb.5:
 	movq	%rax, %r15
 	movq	%rax, %rdi
@@ -148,41 +108,41 @@ main:                                   # @main
 	movq	%r15, %rsi
 	movq	%rax, %rdx
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
-	jmp	.LBB3_6
-.LBB3_1:
+	jmp	.LBB2_6
+.LBB2_1:
 	movq	_ZSt4cerr@GOTPCREL(%rip), %rdi
 	leaq	.L.str(%rip), %rsi
 	movl	$27, %edx
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
-	jmp	.LBB3_8
-.LBB3_10:
+	jmp	.LBB2_8
+.LBB2_10:
 	movq	$0, 24(%rsp)
 	leaq	24(%rsp), %rdi
 	movq	%rbx, %rsi
 	xorl	%edx, %edx
 	callq	cudaHostGetDevicePointer@PLT
 	testl	%eax, %eax
-	je	.LBB3_16
+	je	.LBB2_16
 # %bb.11:
 	movl	%eax, %ebp
 	movq	_ZSt4cerr@GOTPCREL(%rip), %r14
 	leaq	.L.str.3(%rip), %rsi
 	movl	$32, %edx
-	jmp	.LBB3_12
-.LBB3_4:
+	jmp	.LBB2_12
+.LBB2_4:
 	movq	(%r14), %rax
 	movq	-24(%rax), %rax
 	leaq	(%r14,%rax), %rdi
 	movl	32(%r14,%rax), %esi
 	orl	$1, %esi
 	callq	_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@PLT
-.LBB3_6:
+.LBB2_6:
 	movq	_ZSt4cerr@GOTPCREL(%rip), %rdi
 	leaq	.L.str.2(%rip), %rsi
 	movl	$1, %edx
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
-	jmp	.LBB3_7
-.LBB3_16:
+	jmp	.LBB2_7
+.LBB2_16:
 	movq	24(%rsp), %rsi
 	leaq	.L.str.4(%rip), %rdi
 	movq	%rbx, %rdx
@@ -195,19 +155,19 @@ main:                                   # @main
 	movl	$1, %r8d
 	callq	cudaMemcpyToSymbol@PLT
 	testl	%eax, %eax
-	je	.LBB3_18
+	je	.LBB2_18
 # %bb.17:
 	movl	%eax, %ebp
 	movq	_ZSt4cerr@GOTPCREL(%rip), %r14
 	leaq	.L.str.5(%rip), %rsi
 	movl	$26, %edx
-.LBB3_12:
+.LBB2_12:
 	movq	%r14, %rdi
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
 	movl	%ebp, %edi
 	callq	cudaGetErrorString@PLT
 	testq	%rax, %rax
-	je	.LBB3_13
+	je	.LBB2_13
 # %bb.14:
 	movq	%rax, %r15
 	movq	%rax, %rdi
@@ -216,28 +176,28 @@ main:                                   # @main
 	movq	%r15, %rsi
 	movq	%rax, %rdx
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
-	jmp	.LBB3_15
-.LBB3_13:
+	jmp	.LBB2_15
+.LBB2_13:
 	movq	(%r14), %rax
 	movq	-24(%rax), %rax
 	leaq	(%r14,%rax), %rdi
 	movl	32(%r14,%rax), %esi
 	orl	$1, %esi
 	callq	_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@PLT
-.LBB3_15:
+.LBB2_15:
 	movq	_ZSt4cerr@GOTPCREL(%rip), %rdi
 	leaq	.L.str.2(%rip), %rsi
 	movl	$1, %edx
-.LBB3_24:
+.LBB2_24:
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
 	movq	%rbx, %rdi
 	callq	cudaHostUnregister@PLT
-.LBB3_7:
+.LBB2_7:
 	movq	%rbx, %rdi
 	callq	free@PLT
-.LBB3_8:
+.LBB2_8:
 	movl	$-1, %eax
-.LBB3_9:
+.LBB2_9:
 	addq	$56, %rsp
 	.cfi_def_cfa_offset 40
 	popq	%rbx
@@ -249,7 +209,7 @@ main:                                   # @main
 	popq	%rbp
 	.cfi_def_cfa_offset 8
 	retq
-.LBB3_18:
+.LBB2_18:
 	.cfi_def_cfa_offset 96
 	movl	$11223344, 4(%rsp)              # imm = 0xAB4130
 	leaq	4(%rsp), %rdi
@@ -257,7 +217,7 @@ main:                                   # @main
 	movl	$2, %edx
 	callq	cudaHostRegister@PLT
 	testl	%eax, %eax
-	je	.LBB3_25
+	je	.LBB2_25
 # %bb.19:
 	movl	%eax, %ebp
 	movq	_ZSt4cerr@GOTPCREL(%rip), %r14
@@ -268,7 +228,7 @@ main:                                   # @main
 	movl	%ebp, %edi
 	callq	cudaGetErrorString@PLT
 	testq	%rax, %rax
-	je	.LBB3_20
+	je	.LBB2_20
 # %bb.21:
 	movq	%rax, %r15
 	movq	%rax, %rdi
@@ -277,8 +237,8 @@ main:                                   # @main
 	movq	%r15, %rsi
 	movq	%rax, %rdx
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
-	jmp	.LBB3_22
-.LBB3_25:
+	jmp	.LBB2_22
+.LBB2_25:
 	movq	$0, 32(%rsp)
 	leaq	32(%rsp), %r14
 	leaq	4(%rsp), %rsi
@@ -286,7 +246,7 @@ main:                                   # @main
 	xorl	%edx, %edx
 	callq	cudaHostGetDevicePointer@PLT
 	testl	%eax, %eax
-	je	.LBB3_27
+	je	.LBB2_27
 # %bb.26:
 	movl	%eax, %ebp
 	movq	_ZSt4cerr@GOTPCREL(%rip), %r14
@@ -299,15 +259,15 @@ main:                                   # @main
 	movq	%r14, %rdi
 	movq	%rax, %rsi
 	callq	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@PLT
-	jmp	.LBB3_23
-.LBB3_20:
+	jmp	.LBB2_23
+.LBB2_20:
 	movq	(%r14), %rax
 	movq	-24(%rax), %rax
 	leaq	(%r14,%rax), %rdi
 	movl	32(%r14,%rax), %esi
 	orl	$1, %esi
 	callq	_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@PLT
-.LBB3_22:
+.LBB2_22:
 	movq	_ZSt4cerr@GOTPCREL(%rip), %r14
 	leaq	.L.str.7(%rip), %rsi
 	movl	$1, %edx
@@ -316,12 +276,12 @@ main:                                   # @main
 	movq	%r14, %rdi
 	movl	%ebp, %esi
 	callq	_ZNSolsEi@PLT
-.LBB3_23:
+.LBB2_23:
 	leaq	.L.str.2(%rip), %rsi
 	movl	$1, %edx
 	movq	%rax, %rdi
-	jmp	.LBB3_24
-.LBB3_27:
+	jmp	.LBB2_24
+.LBB2_27:
 	movl	$2147483752, %edx               # imm = 0x80000068
 	movq	%rbx, %rdi
 	xorl	%esi, %esi
@@ -341,7 +301,7 @@ main:                                   # @main
 	xorps	%xmm0, %xmm0
 	movups	%xmm0, (%rax)
 	movl	$48, %eax
-.LBB3_29:                               # =>This Inner Loop Header: Depth=1
+.LBB2_29:                               # =>This Inner Loop Header: Depth=1
 	movups	(%rbx), %xmm0
 	movups	%xmm0, -32(%rbx,%rax)
 	movups	(%rbx), %xmm0
@@ -350,7 +310,7 @@ main:                                   # @main
 	movups	%xmm0, (%rbx,%rax)
 	addq	$48, %rax
 	cmpq	$4128, %rax                     # imm = 0x1020
-	jne	.LBB3_29
+	jne	.LBB2_29
 # %bb.30:
 	movb	$1, 16(%rbx)
 	movabsq	$68719476752, %rax              # imm = 0x1000000010
@@ -375,14 +335,14 @@ main:                                   # @main
 .Ltmp6:
 # %bb.32:
 	testl	%eax, %eax
-	jne	.LBB3_34
+	jne	.LBB2_34
 # %bb.33:
 	movq	8(%rsp), %rdi
 .Ltmp7:
 	movl	$2147483752, %esi               # imm = 0x80000068
 	callq	__device_stub__bpf_main
 .Ltmp8:
-.LBB3_34:
+.LBB2_34:
 .Ltmp9:
 	callq	cudaDeviceSynchronize@PLT
 .Ltmp10:
@@ -409,33 +369,33 @@ main:                                   # @main
 	movq	%rbx, %rdi
 	callq	_ZdlPv@PLT
 	cmpq	$0, 16(%rsp)
-	jne	.LBB3_44
+	jne	.LBB2_44
 # %bb.39:
 	xorl	%eax, %eax
-	jmp	.LBB3_9
-.LBB3_40:
+	jmp	.LBB2_9
+.LBB2_40:
 .Ltmp2:
 	movq	%rax, %r14
-	jmp	.LBB3_41
-.LBB3_43:
+	jmp	.LBB2_41
+.LBB2_43:
 .Ltmp17:
 	movq	%rax, %r14
 	movq	%rbx, %rdi
 	callq	_ZdlPv@PLT
-.LBB3_41:
+.LBB2_41:
 	cmpq	$0, 16(%rsp)
-	jne	.LBB3_44
+	jne	.LBB2_44
 # %bb.42:
 	movq	%r14, %rdi
 	callq	_Unwind_Resume@PLT
-.LBB3_44:
+.LBB2_44:
 	callq	_ZSt9terminatev@PLT
-.Lfunc_end3:
-	.size	main, .Lfunc_end3-main
+.Lfunc_end2:
+	.size	main, .Lfunc_end2-main
 	.cfi_endproc
 	.section	.gcc_except_table,"a",@progbits
 	.p2align	2, 0x0
-GCC_except_table3:
+GCC_except_table2:
 .Lexception0:
 	.byte	255                             # @LPStart Encoding = omit
 	.byte	255                             # @TType Encoding = omit
@@ -455,7 +415,7 @@ GCC_except_table3:
 	.uleb128 .Ltmp17-.Lfunc_begin0          #     jumps to .Ltmp17
 	.byte	0                               #   On action: cleanup
 	.uleb128 .Ltmp16-.Lfunc_begin0          # >> Call Site 4 <<
-	.uleb128 .Lfunc_end3-.Ltmp16            #   Call between .Ltmp16 and .Lfunc_end3
+	.uleb128 .Lfunc_end2-.Ltmp16            #   Call between .Ltmp16 and .Lfunc_end2
 	.byte	0                               #     has no landing pad
 	.byte	0                               #   On action: cleanup
 .Lcst_end0:
@@ -497,11 +457,11 @@ _ZNSt6threadC2IZ4mainEUlvE_JEvEEOT_DpOT0_: # @_ZNSt6threadC2IZ4mainEUlvE_JEvEEOT
 # %bb.1:
 	movq	(%rsp), %rdi
 	testq	%rdi, %rdi
-	je	.LBB4_3
+	je	.LBB3_3
 # %bb.2:
 	movq	(%rdi), %rax
 	callq	*8(%rax)
-.LBB4_3:
+.LBB3_3:
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 24
 	popq	%rbx
@@ -509,25 +469,25 @@ _ZNSt6threadC2IZ4mainEUlvE_JEvEEOT_DpOT0_: # @_ZNSt6threadC2IZ4mainEUlvE_JEvEEOT
 	popq	%r14
 	.cfi_def_cfa_offset 8
 	retq
-.LBB4_4:
+.LBB3_4:
 	.cfi_def_cfa_offset 32
 .Ltmp20:
 	movq	%rax, %rbx
 	movq	(%rsp), %rdi
 	testq	%rdi, %rdi
-	je	.LBB4_6
+	je	.LBB3_6
 # %bb.5:
 	movq	(%rdi), %rax
 	callq	*8(%rax)
-.LBB4_6:
+.LBB3_6:
 	movq	%rbx, %rdi
 	callq	_Unwind_Resume@PLT
-.Lfunc_end4:
-	.size	_ZNSt6threadC2IZ4mainEUlvE_JEvEEOT_DpOT0_, .Lfunc_end4-_ZNSt6threadC2IZ4mainEUlvE_JEvEEOT_DpOT0_
+.Lfunc_end3:
+	.size	_ZNSt6threadC2IZ4mainEUlvE_JEvEEOT_DpOT0_, .Lfunc_end3-_ZNSt6threadC2IZ4mainEUlvE_JEvEEOT_DpOT0_
 	.cfi_endproc
 	.section	.gcc_except_table,"a",@progbits
 	.p2align	2, 0x0
-GCC_except_table4:
+GCC_except_table3:
 .Lexception1:
 	.byte	255                             # @LPStart Encoding = omit
 	.byte	255                             # @TType Encoding = omit
@@ -543,7 +503,7 @@ GCC_except_table4:
 	.uleb128 .Ltmp20-.Lfunc_begin1          #     jumps to .Ltmp20
 	.byte	0                               #   On action: cleanup
 	.uleb128 .Ltmp19-.Lfunc_begin1          # >> Call Site 3 <<
-	.uleb128 .Lfunc_end4-.Ltmp19            #   Call between .Ltmp19 and .Lfunc_end4
+	.uleb128 .Lfunc_end3-.Ltmp19            #   Call between .Ltmp19 and .Lfunc_end3
 	.byte	0                               #     has no landing pad
 	.byte	0                               #   On action: cleanup
 .Lcst_end1:
@@ -564,8 +524,8 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEED0Ev: # @_ZNSt
 	popq	%rbx
 	.cfi_def_cfa_offset 8
 	jmp	_ZdlPv@PLT                      # TAILCALL
-.Lfunc_end5:
-	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEED0Ev, .Lfunc_end5-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEED0Ev
+.Lfunc_end4:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEED0Ev, .Lfunc_end4-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEED0Ev
 	.cfi_endproc
                                         # -- End function
 	.p2align	4, 0x90                         # -- Begin function _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv
@@ -601,23 +561,23 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv: # @
 	callq	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT
 	movzbl	_ZL11should_exit.0(%rip), %eax
 	testb	$1, %al
-	jne	.LBB6_18
+	jne	.LBB5_18
 # %bb.1:
 	leaq	.L.str.14(%rip), %rbp
 	leaq	8(%rsp), %r13
-	jmp	.LBB6_2
+	jmp	.LBB5_2
 	.p2align	4, 0x90
-.LBB6_17:                               #   in Loop: Header=BB6_2 Depth=1
+.LBB5_17:                               #   in Loop: Header=BB5_2 Depth=1
 	movzbl	_ZL11should_exit.0(%rip), %eax
 	testb	$1, %al
-	jne	.LBB6_18
-.LBB6_2:                                # =>This Loop Header: Depth=1
-                                        #     Child Loop BB6_15 Depth 2
+	jne	.LBB5_18
+.LBB5_2:                                # =>This Loop Header: Depth=1
+                                        #     Child Loop BB5_15 Depth 2
 	movq	8(%rbx), %rax
 	movq	(%rax), %rax
 	cmpl	$1, (%rax)
-	jne	.LBB6_14
-# %bb.3:                                #   in Loop: Header=BB6_2 Depth=1
+	jne	.LBB5_14
+# %bb.3:                                #   in Loop: Header=BB5_2 Depth=1
 	movl	$0, (%rax)
 	movl	$34, %edx
 	movq	%r14, %rdi
@@ -635,8 +595,8 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv: # @
 	movq	8(%rbx), %rax
 	movq	(%rax), %rax
 	cmpl	$1, 12(%rax)
-	jne	.LBB6_9
-# %bb.4:                                #   in Loop: Header=BB6_2 Depth=1
+	jne	.LBB5_9
+# %bb.4:                                #   in Loop: Header=BB5_2 Depth=1
 	movl	$16, %edx
 	movq	%r14, %rdi
 	leaq	.L.str.13(%rip), %rsi
@@ -654,21 +614,21 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv: # @
 	movq	-24(%rax), %rax
 	movq	240(%r14,%rax), %r15
 	testq	%r15, %r15
-	je	.LBB6_19
-# %bb.5:                                #   in Loop: Header=BB6_2 Depth=1
+	je	.LBB5_19
+# %bb.5:                                #   in Loop: Header=BB5_2 Depth=1
 	cmpb	$0, 56(%r15)
-	je	.LBB6_7
-# %bb.6:                                #   in Loop: Header=BB6_2 Depth=1
+	je	.LBB5_7
+# %bb.6:                                #   in Loop: Header=BB5_2 Depth=1
 	movzbl	67(%r15), %eax
-	jmp	.LBB6_8
-.LBB6_7:                                #   in Loop: Header=BB6_2 Depth=1
+	jmp	.LBB5_8
+.LBB5_7:                                #   in Loop: Header=BB5_2 Depth=1
 	movq	%r15, %rdi
 	callq	_ZNKSt5ctypeIcE13_M_widen_initEv@PLT
 	movq	(%r15), %rax
 	movq	%r15, %rdi
 	movl	$10, %esi
 	callq	*48(%rax)
-.LBB6_8:                                #   in Loop: Header=BB6_2 Depth=1
+.LBB5_8:                                #   in Loop: Header=BB5_2 Depth=1
 	movsbl	%al, %esi
 	movq	%r14, %rdi
 	callq	_ZNSo3putEc@PLT
@@ -682,7 +642,7 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv: # @
 	movq	%rcx, (%rax,%rdx)
 	movq	8(%rbx), %rax
 	movq	(%rax), %rax
-.LBB6_9:                                #   in Loop: Header=BB6_2 Depth=1
+.LBB5_9:                                #   in Loop: Header=BB5_2 Depth=1
 	movl	$1, 4(%rax)
 	mfence
 	movl	$23, %edx
@@ -700,43 +660,43 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv: # @
 	movq	-24(%rax), %rax
 	movq	240(%r15,%rax), %r12
 	testq	%r12, %r12
-	je	.LBB6_19
-# %bb.10:                               #   in Loop: Header=BB6_2 Depth=1
+	je	.LBB5_19
+# %bb.10:                               #   in Loop: Header=BB5_2 Depth=1
 	cmpb	$0, 56(%r12)
-	je	.LBB6_12
-# %bb.11:                               #   in Loop: Header=BB6_2 Depth=1
+	je	.LBB5_12
+# %bb.11:                               #   in Loop: Header=BB5_2 Depth=1
 	movzbl	67(%r12), %eax
-	jmp	.LBB6_13
-.LBB6_12:                               #   in Loop: Header=BB6_2 Depth=1
+	jmp	.LBB5_13
+.LBB5_12:                               #   in Loop: Header=BB5_2 Depth=1
 	movq	%r12, %rdi
 	callq	_ZNKSt5ctypeIcE13_M_widen_initEv@PLT
 	movq	(%r12), %rax
 	movq	%r12, %rdi
 	movl	$10, %esi
 	callq	*48(%rax)
-.LBB6_13:                               #   in Loop: Header=BB6_2 Depth=1
+.LBB5_13:                               #   in Loop: Header=BB5_2 Depth=1
 	movsbl	%al, %esi
 	movq	%r15, %rdi
 	callq	_ZNSo3putEc@PLT
 	movq	%rax, %rdi
 	callq	_ZNSo5flushEv@PLT
-.LBB6_14:                               #   in Loop: Header=BB6_2 Depth=1
+.LBB5_14:                               #   in Loop: Header=BB5_2 Depth=1
 	movq	$0, 8(%rsp)
 	movq	$10000000, 16(%rsp)             # imm = 0x989680
 	.p2align	4, 0x90
-.LBB6_15:                               #   Parent Loop BB6_2 Depth=1
+.LBB5_15:                               #   Parent Loop BB5_2 Depth=1
                                         # =>  This Inner Loop Header: Depth=2
 	movq	%r13, %rdi
 	movq	%r13, %rsi
 	callq	nanosleep@PLT
 	cmpl	$-1, %eax
-	jne	.LBB6_17
-# %bb.16:                               #   in Loop: Header=BB6_15 Depth=2
+	jne	.LBB5_17
+# %bb.16:                               #   in Loop: Header=BB5_15 Depth=2
 	callq	__errno_location@PLT
 	cmpl	$4, (%rax)
-	je	.LBB6_15
-	jmp	.LBB6_17
-.LBB6_18:
+	je	.LBB5_15
+	jmp	.LBB5_17
+.LBB5_18:
 	movq	_ZSt4cout@GOTPCREL(%rip), %rdi
 	leaq	.L.str.15(%rip), %rsi
 	movl	$20, %edx
@@ -756,11 +716,11 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv: # @
 	popq	%rbp
 	.cfi_def_cfa_offset 8
 	retq
-.LBB6_19:
+.LBB5_19:
 	.cfi_def_cfa_offset 80
 	callq	_ZSt16__throw_bad_castv@PLT
-.Lfunc_end6:
-	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv, .Lfunc_end6-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv
+.Lfunc_end5:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv, .Lfunc_end5-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ4mainEUlvE_EEEEE6_M_runEv
 	.cfi_endproc
                                         # -- End function
 	.section	.text.startup,"ax",@progbits
@@ -781,8 +741,8 @@ _GLOBAL__sub_I_test.cu:                 # @_GLOBAL__sub_I_test.cu
 	popq	%rbx
 	.cfi_def_cfa_offset 8
 	jmp	__cxa_atexit@PLT                # TAILCALL
-.Lfunc_end7:
-	.size	_GLOBAL__sub_I_test.cu, .Lfunc_end7-_GLOBAL__sub_I_test.cu
+.Lfunc_end6:
+	.size	_GLOBAL__sub_I_test.cu, .Lfunc_end6-_GLOBAL__sub_I_test.cu
 	.cfi_endproc
                                         # -- End function
 	.type	_ZStL8__ioinit,@object          # @_ZStL8__ioinit
@@ -920,7 +880,6 @@ DW.ref.__gxx_personality_v0:
 	.ident	"clang version 17.0.2 (https://github.com/llvm/llvm-project b2417f51dbbd7435eb3aaf203de24de6754da50e)"
 	.section	".note.GNU-stack","",@progbits
 	.addrsig
-	.addrsig_sym __device_stub__probe_demo
 	.addrsig_sym __device_stub__bpf_main
 	.addrsig_sym _Z14signal_handleri
 	.addrsig_sym __gxx_personality_v0
