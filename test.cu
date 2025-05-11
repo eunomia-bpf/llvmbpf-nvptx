@@ -237,7 +237,6 @@ _bpf_helper_ext_0501(uint64_t data, uint64_t, uint64_t, uint64_t, uint64_t)
 	while (*input) {
 		req.data[idx] = input[idx];
 		idx++;
-		input++;
 	}
 	req.data[idx] = 0;
 	HelperCallResponse resp =
