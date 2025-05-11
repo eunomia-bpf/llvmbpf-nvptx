@@ -234,7 +234,7 @@ _bpf_helper_ext_0501(uint64_t data, uint64_t, uint64_t, uint64_t, uint64_t)
 
 	const char *input = (const char *)data;
 	int idx = 0;
-	while (*input) {
+	while (input[idx]) {
 		req.data[idx] = input[idx];
 		idx++;
 	}
