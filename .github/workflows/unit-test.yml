@@ -37,7 +37,14 @@ jobs:
         lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter system-files
         lcov --list coverage.info # debug info
       
+    # The uploader is v4 with a token, and this repository has no
+    # CODECOV_TOKEN secret, so a tokenless upload is rejected with HTTP 400
+    # and, with fail_ci_if_error, takes the job down after the tests pass.
+    # Skip the step while no token is configured; keep it blocking once one is.
     - uses: codecov/codecov-action@v4
+      if: ${{ env.CODECOV_TOKEN != '' }}
+      env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
           fail_ci_if_error: true # optional (default = false)
           files: ./coverage.info # optional

@@ -45,7 +45,13 @@ jobs:
           lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter system-files
           lcov --list coverage.info # debug info
         
+    # Same as the unit-test job: with no CODECOV_TOKEN secret the v4
+    # uploader is rejected with HTTP 400, and fail_ci_if_error turns that into
+    # a failed job after the suite has already finished.
     - uses: codecov/codecov-action@v4
+      if: ${{ env.CODECOV_TOKEN != '' }}
+      env:
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
             fail_ci_if_error: true # optional (default = false)
             files: ./coverage.info # optional
