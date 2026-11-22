@@ -87,6 +87,7 @@ jobs:
     permissions:
       pages: write      # to deploy to Pages
       id-token: write   # to verify the deployment originates from an appropriate source
+      contents: read
 
     # Deploy to the github-pages environment
     environment:
@@ -96,8 +97,27 @@ jobs:
     # Specify runner + deployment step
     runs-on: ubuntu-latest
     steps:
+      # `actions/deploy-pages` fails when the repository has no Pages site at
+      # all, and also when Pages is enabled but still built from a branch.
+      # Check the site's build type first so a publication step that cannot
+      # succeed skips instead of failing an otherwise green run.
+      - name: Check whether Pages deploys from a workflow
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          info="$(gh api "repos/${GITHUB_REPOSITORY}/pages" 2>/dev/null || true)"
+          build_type="$(printf '%s' "$info" | jq -r '.build_type // empty' 2>/dev/null || true)"
+          if [ "$build_type" = "workflow" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages does not deploy from a workflow for this repository (build_type='${build_type:-none}'); skipping the deployment step."
+          fi
+
       - name: Deploy to GitHub Pages
         id: deployment
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
 
 
