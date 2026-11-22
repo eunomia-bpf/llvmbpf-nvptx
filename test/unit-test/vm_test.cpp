@@ -1,7 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
 #include <iostream>
+#include <vector>
 #include "llvmbpf.hpp"
+#include "ebpf_inst.h"
 
 /*
 
@@ -322,4 +324,30 @@ TEST_CASE("Test compile with default LDDW helper")
 	auto func = vm.compile();
 	REQUIRE(func.has_value()); // Compilation should success because the
 				   // default helpers are provided
+}
+
+// The pc loop and every jump/call target map used to be uint16_t, so a
+// program of 65536 instructions or more wrapped the counter and codegen
+// never returned; distinct pcs above 64K also collided in the maps.
+TEST_CASE("Programs longer than 65536 instructions compile and run")
+{
+	constexpr uint32_t n_adds = 70000;
+	std::vector<ebpf_inst> insns;
+	insns.reserve(n_adds + 2);
+	// r0 = 0
+	insns.push_back({ 0xb7, 0, 0, 0, 0 });
+	// n_adds * r0 += 1
+	for (uint32_t i = 0; i < n_adds; i++)
+		insns.push_back({ 0x07, 0, 0, 0, 1 });
+	insns.push_back({ 0x95, 0, 0, 0, 0 });
+
+	REQUIRE(insns.size() > 65536);
+	bpftime::llvmbpf_vm vm;
+	REQUIRE(vm.load_code(insns.data(),
+			     insns.size() * sizeof(ebpf_inst)) == 0);
+	REQUIRE(vm.compile());
+
+	uint64_t ret = 0;
+	REQUIRE(vm.exec(nullptr, 0, ret) == 0);
+	REQUIRE(ret == n_adds);
 }

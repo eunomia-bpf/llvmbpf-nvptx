@@ -142,7 +142,7 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 	std::vector<bool> blockBegin(insts.size(), false);
 	// Split the blocks
 	blockBegin[0] = true;
-	for (uint16_t i = 0; i < insts.size(); i++) {
+	for (uint32_t i = 0; i < insts.size(); i++) {
 		auto curr = insts[i];
 		SPDLOG_TRACE("check pc {} opcode={} ", i,
 			     (uint16_t)curr.opcode);
@@ -150,13 +150,15 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 			blockBegin[i] = true;
 			SPDLOG_TRACE("mark {} block begin", i);
 		}
-		if (is_imm_jmp(curr)) {
-			SPDLOG_TRACE("mark {} block begin", i + curr.imm + 1);
-			blockBegin[i + curr.imm + 1] = true;
-		} else if (is_jmp(curr)) {
-			SPDLOG_TRACE("mark {} block begin",
-				     i + curr.offset + 1);
-			blockBegin[i + curr.offset + 1] = true;
+		if (is_jmp(curr)) {
+			const int64_t target =
+				(int64_t)i + 1 +
+				(int64_t)(is_imm_jmp(curr) ? curr.imm :
+							     curr.offset);
+			if (target >= 0 && target < (int64_t)blockBegin.size()) {
+				SPDLOG_TRACE("mark {} block begin", target);
+				blockBegin[target] = true;
+			}
 		}
 	}
 
@@ -215,13 +217,13 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 	}
 	// These blocks are the next instructions of the returning target of
 	// local functions
-	std::map<uint16_t, BlockAddress *> localFuncRetBlks;
+	std::map<uint32_t, BlockAddress *> localFuncRetBlks;
 	// Prepare basic blocks
-	std::map<uint16_t, BasicBlock *> instBlocks;
+	std::map<uint32_t, BasicBlock *> instBlocks;
 	{
 		IRBuilder<> builder(*context);
 
-		for (uint16_t i = 0; i < insts.size(); i++) {
+		for (uint32_t i = 0; i < insts.size(); i++) {
 			if (blockBegin[i]) {
 				// Create a block
 				auto currBlk = BasicBlock::Create(
@@ -305,7 +307,7 @@ Expected<ThreadSafeModule> llvm_bpf_jit_context::generateModule(
 	// Iterate over instructions
 	BasicBlock *currBB = instBlocks[0];
 	IRBuilder<> builder(currBB);
-	for (uint16_t pc = 0; pc < insts.size(); pc++) {
+	for (uint32_t pc = 0; pc < insts.size(); pc++) {
 		auto inst = insts[pc];
 		if (blockBegin[pc]) {
 			if (auto itr = instBlocks.find(pc);
