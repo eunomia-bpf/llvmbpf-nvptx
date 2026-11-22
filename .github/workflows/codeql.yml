@@ -27,7 +27,7 @@ jobs:
     #   - https://gh.io/supported-runners-and-hardware-resources
     #   - https://gh.io/using-larger-runners (GitHub.com only)
     # Consider using larger runners or machines with greater resources for possible analysis time improvements.
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || (matrix.language == 'c-cpp' && 'ubuntu-22.04') || 'ubuntu-latest' }}
     permissions:
       # required for all workflows
       security-events: write
@@ -80,7 +80,7 @@ jobs:
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
-        sudo apt install llvm-15-dev libzstd-dev
+        sudo apt-get update && sudo apt-get install -y llvm-15-dev libzstd-dev
         LLVM_DIR=/usr/lib/llvm-15/cmake cmake -B build -DCMAKE_BUILD_TYPE=Debug
         cmake --build build --target all -j
 
